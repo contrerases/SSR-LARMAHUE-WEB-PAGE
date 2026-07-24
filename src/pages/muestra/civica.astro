@@ -1,10 +1,159 @@
 ---
-// Diseño A · Confianza Cívica
+// Diseño A · Confianza Cívica — retícula estructurada, simétrica, institucional.
 import "@fontsource-variable/sora";
 import "@fontsource-variable/public-sans";
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import ShowcaseContent from "../../components/ShowcaseContent.astro";
+import { Container, Button, Badge, ContactItem, WhatsappButton, ThemeToggle } from "../../components/ui";
+import { site, navLinks } from "../../config/site";
+
+const servicios = [
+  { t: "Galería", d: "Imágenes de obras y actividades.", icon: "M4 5h16v14H4z M4 15l4-4 3 3 5-5 4 4" },
+  { t: "Videos", d: "Material audiovisual del servicio.", icon: "M4 5h16v14H4z M10 9l5 3-5 3z" },
+  { t: "Biblioteca", d: "Reglamentos, estatutos y documentos.", icon: "M5 4h10a2 2 0 0 1 2 2v14H7a2 2 0 0 1-2-2z M17 20a2 2 0 0 0 2-2V6" },
+  { t: "Conozca su Boleta", d: "Aprenda a leer su boleta.", icon: "M6 3h9l4 4v14H6z M14 3v5h5" },
+];
+const accesos = [
+  { t: "Pagar mi boleta", s: "Webpay · en línea", href: site.services.pagoEnLinea, v: "pago" },
+  { t: "Oficina Virtual", s: "Consulta tu cuenta", href: site.services.oficinaVirtual, v: "ov" },
+];
+const stats = [
+  ["24/7", "Atención de emergencias"],
+  ["Larmahue", "Pichidegua, O'Higgins"],
+  ["100%", "Agua potable rural"],
+];
 ---
 <BaseLayout design="civica" title="Diseño · Confianza Cívica">
-  <ShowcaseContent designName="Confianza Cívica" wave="smooth" />
+  <!-- Header estructurado -->
+  <header class="sticky top-0 z-40 border-b border-border bg-background/90 backdrop-blur">
+    <Container class="flex h-18 items-center justify-between gap-4 py-3">
+      <a href="#" class="flex items-center gap-2.5">
+        <span class="flex size-9 items-center justify-center rounded-md bg-primary text-primary-foreground">
+          <svg viewBox="0 0 24 24" fill="currentColor" class="size-5"><path d="M12 3s6 6.5 6 10a6 6 0 1 1-12 0c0-3.5 6-10 6-10Z"/></svg>
+        </span>
+        <span class="font-display text-base font-bold">{site.name}</span>
+      </a>
+      <nav class="hidden items-center gap-1 md:flex">
+        {navLinks.map((l) => <a href={l.href} class="rounded-md px-3 py-2 text-sm font-medium text-foreground/75 hover:bg-muted hover:text-foreground">{l.label}</a>)}
+      </nav>
+      <div class="flex items-center gap-2">
+        <Button href={site.services.oficinaVirtual} variant="ov" size="sm" external class="hidden sm:inline-flex">Oficina Virtual</Button>
+        <Button href={site.services.pagoEnLinea} variant="pago" size="sm" external>Pagar</Button>
+        <ThemeToggle />
+      </div>
+    </Container>
+  </header>
+
+  <!-- Hero partido: texto + panel de accesos (simétrico, contenido) -->
+  <section class="border-b border-border bg-muted/40">
+    <Container class="grid items-center gap-10 py-16 lg:grid-cols-2 lg:py-24">
+      <div class="flex flex-col gap-5">
+        <Badge tone="primary" class="w-fit">Servicio Sanitario Rural</Badge>
+        <h1 class="text-balance font-display text-4xl font-extrabold leading-[1.1] tracking-tight sm:text-5xl">
+          Agua potable para la comunidad de Larmahue
+        </h1>
+        <p class="max-w-lg text-lg text-muted-foreground">{site.mission}</p>
+        <div class="mt-2 flex flex-wrap gap-3">
+          <Button href={site.services.pagoEnLinea} variant="pago" size="lg" external>Pagar mi boleta</Button>
+          <Button href={site.services.oficinaVirtual} variant="ov" size="lg" external>Oficina Virtual</Button>
+        </div>
+      </div>
+      <!-- Panel accesos rápidos -->
+      <div class="rounded-xl border border-border bg-card p-6 shadow-card">
+        <p class="mb-4 text-sm font-semibold uppercase tracking-wide text-muted-foreground">Accesos rápidos</p>
+        <div class="flex flex-col divide-y divide-border">
+          {accesos.map((a) => (
+            <a href={a.href} target="_blank" rel="noopener noreferrer" class="group flex items-center justify-between gap-4 py-4">
+              <span class="flex flex-col">
+                <span class="font-semibold">{a.t}</span>
+                <span class="text-sm text-muted-foreground">{a.s}</span>
+              </span>
+              <span class={`flex size-10 items-center justify-center rounded-md ${a.v === "pago" ? "bg-action-pago" : "bg-action-ov"} text-white transition-transform group-hover:translate-x-0.5`}>→</span>
+            </a>
+          ))}
+          <div class="flex items-center justify-between gap-4 py-4">
+            <span class="flex flex-col">
+              <span class="font-semibold">Emergencias</span>
+              <span class="text-sm text-muted-foreground">Reporte de fugas 24/7</span>
+            </span>
+            <a href={`tel:${site.contact.emergencyPhone.replace(/\s/g,"")}`} class="font-semibold text-primary">{site.contact.emergencyPhone}</a>
+          </div>
+        </div>
+      </div>
+    </Container>
+  </section>
+
+  <!-- Franja de datos (grilla uniforme) -->
+  <section class="border-b border-border">
+    <Container class="grid divide-y divide-border sm:grid-cols-3 sm:divide-x sm:divide-y-0">
+      {stats.map(([n, l]) => (
+        <div class="flex flex-col items-center gap-1 py-8 text-center">
+          <span class="font-display text-3xl font-extrabold text-primary">{n}</span>
+          <span class="text-sm text-muted-foreground">{l}</span>
+        </div>
+      ))}
+    </Container>
+  </section>
+
+  <!-- Servicios: grilla ordenada de 4 tarjetas iguales -->
+  <section class="py-16 sm:py-20">
+    <Container>
+      <div class="mx-auto mb-12 max-w-2xl text-center">
+        <p class="text-xs font-semibold uppercase tracking-[0.16em] text-primary">Accesos</p>
+        <h2 class="mt-3 font-display text-3xl font-bold sm:text-4xl">Información y trámites</h2>
+      </div>
+      <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        {servicios.map((s) => (
+          <article class="flex flex-col rounded-lg border border-border bg-card p-6 shadow-card transition-transform hover:-translate-y-1">
+            <span class="mb-4 flex size-11 items-center justify-center rounded-md bg-primary/10 text-primary">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" class="size-6"><path d={s.icon}/></svg>
+            </span>
+            <h3 class="font-display font-semibold">{s.t}</h3>
+            <p class="mt-1.5 flex-1 text-sm text-muted-foreground">{s.d}</p>
+            <span class="mt-4 text-sm font-semibold text-primary">Ver más →</span>
+          </article>
+        ))}
+      </div>
+    </Container>
+  </section>
+
+  <!-- Aviso -->
+  <section class="pb-16">
+    <Container>
+      <div class="flex flex-col items-center gap-4 rounded-lg border border-primary/20 bg-primary/5 px-6 py-6 text-center sm:flex-row sm:text-left">
+        <span class="flex size-11 shrink-0 items-center justify-center rounded-md bg-primary text-primary-foreground">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="size-6"><path d="M12 9v4m0 4h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg>
+        </span>
+        <p class="flex-1"><strong>¿Detectaste una fuga o desperfecto?</strong> Infórmanos al fono {site.contact.officePhone} y pasaremos a revisar.</p>
+        <Button href={`tel:${site.contact.officePhone}`} variant="primary">Llamar ahora</Button>
+      </div>
+    </Container>
+  </section>
+
+  <!-- Contacto -->
+  <section id="contacto" class="border-t border-border bg-muted/40 py-16">
+    <Container class="grid gap-10 lg:grid-cols-2">
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-[0.16em] text-primary">Contacto</p>
+        <h2 class="mt-3 font-display text-3xl font-bold">Estamos para ayudarte</h2>
+        <p class="mt-3 max-w-md text-muted-foreground">Comunícate con la oficina o por WhatsApp en caso de emergencia.</p>
+      </div>
+      <div class="grid gap-5 sm:grid-cols-2">
+        <ContactItem icon="pin" label="Dirección" value={site.location} />
+        <ContactItem icon="mail" label="Correo" value={site.contact.email} href={`mailto:${site.contact.email}`} />
+        <ContactItem icon="phone" label="Fono oficina" value={site.contact.officePhone} href={`tel:${site.contact.officePhone}`} />
+        <ContactItem icon="emergency" label="Emergencias" value={site.contact.emergencyPhone} />
+      </div>
+    </Container>
+  </section>
+
+  <!-- Footer 4 columnas -->
+  <footer class="border-t border-border bg-background py-10">
+    <Container class="flex flex-col items-center justify-between gap-3 text-sm text-muted-foreground sm:flex-row">
+      <span class="font-display font-bold text-foreground">{site.name}</span>
+      <span>© 2026 {site.fullName}</span>
+      <a href="#" class="hover:text-primary">Políticas de Privacidad</a>
+    </Container>
+  </footer>
+
+  <WhatsappButton phone={site.contact.emergencyPhone} />
 </BaseLayout>
