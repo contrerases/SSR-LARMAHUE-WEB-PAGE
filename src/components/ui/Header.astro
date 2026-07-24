@@ -1,0 +1,59 @@
+---
+/** Cabecera del sitio: marca, navegación, teléfono de emergencia y accesos. */
+import Container from "./Container.astro";
+import Button from "./Button.astro";
+import ThemeToggle from "./ThemeToggle.astro";
+import { site, navLinks } from "../../config/site";
+---
+<header
+  class="sticky top-0 z-40 border-b border-border bg-background/80 backdrop-blur-md"
+>
+  <Container class="flex h-16 items-center justify-between gap-4 sm:h-20">
+    <!-- Marca -->
+    <a href="/" class="flex items-center gap-2.5">
+      <span
+        class="flex size-9 items-center justify-center rounded-[var(--radius-md)] bg-primary text-primary-foreground"
+        aria-hidden="true"
+      >
+        <svg viewBox="0 0 24 24" fill="currentColor" class="size-5">
+          <path d="M12 3s6 6.5 6 10a6 6 0 1 1-12 0c0-3.5 6-10 6-10Z"></path>
+        </svg>
+      </span>
+      <span class="flex flex-col leading-tight">
+        <span class="font-display text-sm font-bold text-foreground sm:text-base">{site.name}</span>
+        <span class="hidden text-[11px] text-muted-foreground sm:block">{site.slogan}</span>
+      </span>
+    </a>
+
+    <!-- Navegación (escritorio) -->
+    <nav class="hidden items-center gap-1 lg:flex" aria-label="Principal">
+      {
+        navLinks.map((link) => (
+          <a
+            href={link.href}
+            class="rounded-[var(--radius-md)] px-3 py-2 text-sm font-medium text-foreground/80 transition-colors hover:bg-muted hover:text-foreground"
+          >
+            {link.label}
+          </a>
+        ))
+      }
+    </nav>
+
+    <!-- Accesos -->
+    <div class="flex items-center gap-2">
+      <div class="mr-1 hidden flex-col items-end leading-tight xl:flex">
+        <span class="text-[11px] uppercase tracking-wide text-muted-foreground">Emergencias</span>
+        <a href={`tel:${site.contact.emergencyPhone.replace(/\s/g, "")}`} class="text-sm font-semibold text-foreground">
+          {site.contact.emergencyPhone}
+        </a>
+      </div>
+      <Button href={site.services.oficinaVirtual} variant="ov" size="sm" external class="hidden sm:inline-flex">
+        Oficina Virtual
+      </Button>
+      <Button href={site.services.pagoEnLinea} variant="pago" size="sm" external>
+        Pago en Línea
+      </Button>
+      <ThemeToggle class="hidden sm:inline-flex" />
+    </div>
+  </Container>
+</header>

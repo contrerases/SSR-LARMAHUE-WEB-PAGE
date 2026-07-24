@@ -1,0 +1,39 @@
+---
+/** Aviso destacado (p. ej. "Infórmanos fugas y desperfectos al fono ..."). */
+interface Props {
+  tone?: "primary" | "warning" | "info";
+  title?: string;
+  class?: string;
+}
+const { tone = "primary", title, class: className = "" } = Astro.props;
+const tones = {
+  primary: "bg-primary text-primary-foreground",
+  warning: "bg-action-pago text-action-pago-foreground",
+  info: "bg-secondary text-secondary-foreground",
+};
+---
+<div
+  class:list={[
+    "flex items-start gap-4 rounded-[var(--radius)] px-6 py-5 shadow-card",
+    tones[tone],
+    className,
+  ]}
+  role="note"
+>
+  <span class="mt-0.5 shrink-0" aria-hidden="true">
+    <slot name="icon">
+      <svg viewBox="0 0 24 24" fill="none" class="size-6">
+        <path
+          d="M12 9v4m0 4h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"
+          stroke="currentColor"
+          stroke-width="1.8"
+          stroke-linecap="round"
+          stroke-linejoin="round"></path>
+      </svg>
+    </slot>
+  </span>
+  <div class="text-sm sm:text-base">
+    {title && <p class="font-semibold">{title}</p>}
+    <div class={title ? "mt-0.5 opacity-90" : ""}><slot /></div>
+  </div>
+</div>

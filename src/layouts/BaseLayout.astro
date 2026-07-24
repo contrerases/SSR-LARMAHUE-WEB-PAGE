@@ -1,0 +1,64 @@
+---
+/**
+ * Layout base del sitio.
+ * Define el <head> (SEO básico, meta social, tema) y el esqueleto <body>.
+ * El diseño visual concreto se definirá en la Fase 3; aquí solo la estructura.
+ */
+import "../styles/global.css";
+import { site } from "../config/site";
+
+interface Props {
+  title?: string;
+  description?: string;
+  /** Tema visual activo: "civica" | "agua" | "territorio". Por defecto Cívica. */
+  design?: "civica" | "agua" | "territorio";
+}
+
+const {
+  title,
+  description = site.mission,
+  design = "civica",
+} = Astro.props;
+
+const pageTitle = title ? `${title} · ${site.name}` : `${site.name} · ${site.slogan}`;
+const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin).href;
+---
+
+<!doctype html>
+<html lang="es" data-design={design}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+
+    <!-- Open Graph / social -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={site.fullName} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta name="theme-color" content="#0e7490" />
+
+    <!-- Evita parpadeo de tema: aplica la preferencia guardada antes de pintar -->
+    <script is:inline>
+      (() => {
+        const stored = localStorage.getItem("theme");
+        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        const theme = stored ?? (prefersDark ? "dark" : "light");
+        document.documentElement.dataset.theme = theme;
+      })();
+    </script>
+  </head>
+  <body class="min-h-dvh flex flex-col">
+    <slot name="header" />
+    <main class="flex-1">
+      <slot />
+    </main>
+    <slot name="footer" />
+  </body>
+</html>

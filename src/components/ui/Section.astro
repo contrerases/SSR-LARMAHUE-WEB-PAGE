@@ -1,0 +1,40 @@
+---
+/** Bloque de sección vertical con tono de fondo temático. */
+import Container from "./Container.astro";
+interface Props {
+  tone?: "base" | "muted" | "primary";
+  size?: "sm" | "md" | "lg";
+  container?: "sm" | "md" | "lg" | false;
+  id?: string;
+  class?: string;
+}
+const {
+  tone = "base",
+  size = "md",
+  container = "lg",
+  id,
+  class: className = "",
+} = Astro.props;
+
+const tones = {
+  base: "bg-background text-foreground",
+  muted: "bg-muted text-foreground",
+  primary: "bg-primary text-primary-foreground",
+};
+const paddings = {
+  sm: "py-10 sm:py-14",
+  md: "py-16 sm:py-20",
+  lg: "py-20 sm:py-28",
+};
+---
+<section id={id} class:list={[tones[tone], paddings[size], className]}>
+  {
+    container ? (
+      <Container size={container}>
+        <slot />
+      </Container>
+    ) : (
+      <slot />
+    )
+  }
+</section>

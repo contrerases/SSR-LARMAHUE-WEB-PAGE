@@ -1,0 +1,27 @@
+---
+/** Encabezado de sección: antetítulo + título + subtítulo opcional. */
+import Eyebrow from "./Eyebrow.astro";
+interface Props {
+  eyebrow?: string;
+  title: string;
+  subtitle?: string;
+  align?: "left" | "center";
+  class?: string;
+}
+const {
+  eyebrow,
+  title,
+  subtitle,
+  align = "center",
+  class: className = "",
+} = Astro.props;
+const alignment =
+  align === "center" ? "items-center text-center mx-auto" : "items-start text-left";
+---
+<div class:list={["flex max-w-2xl flex-col gap-3", alignment, className]}>
+  {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
+  <h2 class="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+    {title}
+  </h2>
+  {subtitle && <p class="text-pretty text-base text-muted-foreground sm:text-lg">{subtitle}</p>}
+</div>

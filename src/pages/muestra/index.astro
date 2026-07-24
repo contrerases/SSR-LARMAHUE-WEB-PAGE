@@ -1,0 +1,61 @@
+---
+// Índice de muestras: enlaces a las 3 direcciones de diseño.
+import "@fontsource-variable/sora";
+import "@fontsource-variable/public-sans";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { Container, Button, Badge } from "../../components/ui";
+
+const disenos = [
+  {
+    slug: "civica",
+    name: "A · Confianza Cívica",
+    desc: "Servicio público moderno: claro, confiable y accesible. Azul institucional, tipografía Sora + Public Sans, tarjetas con sombra suave.",
+    swatches: ["#145da0", "#00a5ba", "#15954e", "#e8f1f8"],
+  },
+  {
+    slug: "agua",
+    name: "B · El Agua nos Mueve",
+    desc: "Fluido y expresivo. Degradados de agua, tarjetas glass, botones pill, tipografía Bricolage + Hanken. Identidad memorable.",
+    swatches: ["#0c2d48", "#1668a6", "#06b6d4", "#b1d4e0"],
+  },
+  {
+    slug: "territorio",
+    name: "C · Territorio y Agua",
+    desc: "Agua + tierra de Pichidegua. Cálido y local. Azul con acentos olivo/trigo, serif Fraunces + Hanken, formas más sobrias.",
+    swatches: ["#1f6fa8", "#6b7a4f", "#c08a4e", "#e9e2d3"],
+  },
+];
+---
+<BaseLayout design="civica" title="Muestras de diseño">
+  <main>
+    <Container size="md" class="py-16 sm:py-24">
+      <Badge tone="outline">Fase 3 · Elección de diseño</Badge>
+      <h1 class="mt-4 font-display text-4xl font-extrabold tracking-tight sm:text-5xl">
+        Tres direcciones de diseño
+      </h1>
+      <p class="mt-4 max-w-2xl text-lg text-muted-foreground">
+        Misma biblioteca de componentes, tres temas. Abre cada una, compáralas (prueba
+        el modo oscuro con el botón de tema) y dime cuál seguimos.
+      </p>
+
+      <div class="mt-12 grid gap-6 md:grid-cols-3">
+        {
+          disenos.map((d) => (
+            <article class="flex flex-col rounded-[var(--radius)] border border-border bg-card p-6 shadow-card">
+              <div class="flex gap-1.5">
+                {d.swatches.map((c) => (
+                  <span class="size-6 rounded-full border border-black/5" style={`background:${c}`} />
+                ))}
+              </div>
+              <h2 class="mt-5 font-display text-xl font-bold">{d.name}</h2>
+              <p class="mt-2 flex-1 text-sm text-muted-foreground">{d.desc}</p>
+              <Button href={`/muestra/${d.slug}`} variant="primary" class="mt-6">
+                Ver diseño →
+              </Button>
+            </article>
+          ))
+        }
+      </div>
+    </Container>
+  </main>
+</BaseLayout>

@@ -1,0 +1,173 @@
+---
+/**
+ * Contenido de muestra: arma una página realista con TODA la biblioteca UI,
+ * más una sección de referencia de componentes. Se re-tematiza solo según el
+ * data-design activo (no cambia el marcado entre diseños).
+ */
+import {
+  Header,
+  Hero,
+  Section,
+  SectionHeading,
+  Card,
+  Button,
+  Badge,
+  NoticeBar,
+  ContactItem,
+  WaveDivider,
+  WhatsappButton,
+  Footer,
+} from "./ui";
+import { site } from "../config/site";
+
+interface Props {
+  wave?: "smooth" | "layered" | "contour";
+  designName: string;
+}
+const { wave = "smooth", designName } = Astro.props;
+
+const servicios = [
+  { title: "Galería", description: "Imágenes de nuestras obras y actividades.", href: "#" },
+  { title: "Videos", description: "Material audiovisual del servicio.", href: "#" },
+  { title: "Biblioteca", description: "Documentos, reglamentos y estatutos.", href: "#" },
+  { title: "Conozca su Boleta", description: "Aprenda a leer y entender su boleta.", href: "#" },
+];
+---
+<Header />
+
+<Hero
+  eyebrow={site.slogan}
+  title="Agua potable para la comunidad de Larmahue"
+  subtitle={site.mission}
+>
+  <Fragment slot="actions">
+    <Button href={site.services.oficinaVirtual} variant="ov" size="lg" external>Oficina Virtual</Button>
+    <Button href={site.services.pagoEnLinea} variant="pago" size="lg" external>Pagar mi Boleta</Button>
+  </Fragment>
+</Hero>
+
+<WaveDivider variant={wave} />
+
+<!-- Compromiso -->
+<Section tone="base" size="md">
+  <SectionHeading
+    eyebrow="Nuestro compromiso es"
+    title="Cuidar el agua y a las personas"
+    subtitle={site.mission}
+  />
+</Section>
+
+<!-- Servicios -->
+<Section tone="muted" size="md">
+  <SectionHeading
+    eyebrow="Accesos"
+    title="Información y trámites"
+    subtitle="Todo lo que necesitas, en un solo lugar."
+    class="mb-12"
+  />
+  <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+    {servicios.map((s) => <Card title={s.title} description={s.description} href={s.href} />)}
+  </div>
+</Section>
+
+<!-- Aviso -->
+<Section tone="base" size="sm">
+  <NoticeBar tone="primary" title="¿Detectaste una fuga o desperfecto?">
+    Infórmanos al fono <strong>{site.contact.officePhone}</strong> y pasaremos a revisar a la brevedad.
+  </NoticeBar>
+</Section>
+
+<!-- Contacto -->
+<Section id="contacto" tone="muted" size="md">
+  <div class="grid gap-10 lg:grid-cols-2">
+    <SectionHeading
+      align="left"
+      eyebrow="Contacto"
+      title="Estamos para ayudarte"
+      subtitle="Comunícate con la oficina o por WhatsApp en caso de emergencia."
+    />
+    <div class="grid gap-5 sm:grid-cols-2">
+      <ContactItem icon="pin" label="Dirección" value={site.location} />
+      <ContactItem icon="mail" label="Correo" value={site.contact.email} href={`mailto:${site.contact.email}`} />
+      <ContactItem icon="phone" label="Fono oficina" value={site.contact.officePhone} href={`tel:${site.contact.officePhone}`} />
+      <ContactItem icon="emergency" label="Emergencias" value={site.contact.emergencyPhone} />
+    </div>
+  </div>
+</Section>
+
+<!-- ===================== REFERENCIA DE COMPONENTES ===================== -->
+<Section tone="base" size="lg">
+  <div class="mb-12 flex items-center gap-3">
+    <Badge tone="outline">Referencia</Badge>
+    <h2 class="font-display text-2xl font-bold">Biblioteca · {designName}</h2>
+  </div>
+
+  <div class="flex flex-col gap-14">
+    <!-- Botones -->
+    <div>
+      <p class="mb-4 text-sm font-semibold uppercase tracking-wide text-muted-foreground">Botones</p>
+      <div class="flex flex-wrap items-center gap-3">
+        <Button variant="primary">Primario</Button>
+        <Button variant="secondary">Secundario</Button>
+        <Button variant="outline">Contorno</Button>
+        <Button variant="ghost">Fantasma</Button>
+        <Button variant="ov">Oficina Virtual</Button>
+        <Button variant="pago">Pago en Línea</Button>
+      </div>
+      <div class="mt-4 flex flex-wrap items-center gap-3">
+        <Button size="sm">Pequeño</Button>
+        <Button size="md">Mediano</Button>
+        <Button size="lg">Grande</Button>
+      </div>
+    </div>
+
+    <!-- Badges -->
+    <div>
+      <p class="mb-4 text-sm font-semibold uppercase tracking-wide text-muted-foreground">Etiquetas</p>
+      <div class="flex flex-wrap gap-3">
+        <Badge tone="primary">Vigente</Badge>
+        <Badge tone="muted">Informativo</Badge>
+        <Badge tone="ov">Oficina Virtual</Badge>
+        <Badge tone="pago">Pago</Badge>
+        <Badge tone="outline">Contorno</Badge>
+      </div>
+    </div>
+
+    <!-- Paleta -->
+    <div>
+      <p class="mb-4 text-sm font-semibold uppercase tracking-wide text-muted-foreground">Paleta de tokens</p>
+      <div class="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-6">
+        {
+          [
+            ["Primary", "bg-primary text-primary-foreground"],
+            ["Secondary", "bg-secondary text-secondary-foreground"],
+            ["Accent", "bg-accent text-accent-foreground"],
+            ["Action OV", "bg-action-ov text-action-ov-foreground"],
+            ["Action Pago", "bg-action-pago text-action-pago-foreground"],
+            ["Muted", "bg-muted text-muted-foreground"],
+          ].map(([name, cls]) => (
+            <div class={`flex h-20 items-end rounded-[var(--radius-md)] border border-border p-3 text-xs font-medium ${cls}`}>
+              {name}
+            </div>
+          ))
+        }
+      </div>
+    </div>
+
+    <!-- Tipografía -->
+    <div>
+      <p class="mb-4 text-sm font-semibold uppercase tracking-wide text-muted-foreground">Tipografía</p>
+      <div class="flex flex-col gap-2">
+        <p class="font-display text-4xl font-extrabold">Titular display</p>
+        <p class="font-display text-2xl font-bold">Subtítulo display</p>
+        <p class="max-w-prose text-base text-muted-foreground">
+          Texto de cuerpo con la fuente sans del diseño. El agua es un bien común: este
+          servicio integra el consumo responsable con el respeto al medioambiente y a las personas.
+        </p>
+      </div>
+    </div>
+  </div>
+</Section>
+
+<Footer />
+<WhatsappButton phone={site.contact.emergencyPhone} />

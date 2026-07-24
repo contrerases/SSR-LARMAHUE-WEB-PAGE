@@ -1,0 +1,64 @@
+---
+/**
+ * Separador de onda (motivo "agua" del sitio).
+ * - smooth: una sola onda limpia (Cívica)
+ * - layered: varias ondas superpuestas (Agua)
+ * - contour: líneas de nivel / cauce (Territorio)
+ */
+interface Props {
+  variant?: "smooth" | "layered" | "contour";
+  flip?: boolean;
+  class?: string;
+}
+const { variant = "smooth", flip = false, class: className = "" } = Astro.props;
+---
+<div
+  class:list={["pointer-events-none w-full overflow-hidden leading-[0]", flip && "rotate-180", className]}
+  aria-hidden="true"
+>
+  <svg
+    viewBox="0 0 1440 120"
+    preserveAspectRatio="none"
+    class="h-[60px] w-full sm:h-[90px]"
+    style="color: var(--wave-color)"
+  >
+    {
+      variant === "layered" ? (
+        <>
+          <path
+            fill="currentColor"
+            opacity="0.4"
+            d="M0 40 C240 100 480 0 720 40 C960 80 1200 20 1440 60 L1440 120 L0 120 Z"
+          />
+          <path
+            fill="currentColor"
+            d="M0 70 C240 120 480 40 720 70 C960 100 1200 50 1440 80 L1440 120 L0 120 Z"
+          />
+        </>
+      ) : variant === "contour" ? (
+        <>
+          <path
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            opacity="0.35"
+            d="M0 60 C360 20 1080 100 1440 60"
+          />
+          <path
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            opacity="0.6"
+            d="M0 85 C360 45 1080 125 1440 85"
+          />
+          <path fill="currentColor" d="M0 100 C360 60 1080 140 1440 100 L1440 120 L0 120 Z" />
+        </>
+      ) : (
+        <path
+          fill="currentColor"
+          d="M0 60 C360 120 1080 0 1440 60 L1440 120 L0 120 Z"
+        />
+      )
+    }
+  </svg>
+</div>

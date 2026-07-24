@@ -1,0 +1,44 @@
+---
+/**
+ * Hero principal. El fondo usa el token temático --hero-gradient, así que cada
+ * diseño produce una atmósfera distinta sin cambiar el marcado.
+ */
+import Container from "./Container.astro";
+interface Props {
+  eyebrow?: string;
+  title: string;
+  subtitle?: string;
+  class?: string;
+}
+const { eyebrow, title, subtitle, class: className = "" } = Astro.props;
+---
+<section
+  class:list={["relative isolate overflow-hidden text-white", className]}
+  style="background-image: var(--hero-gradient)"
+>
+  <!-- Textura sutil de burbujas/luz -->
+  <div
+    class="absolute inset-0 -z-10 opacity-40"
+    style="background-image: radial-gradient(60% 50% at 80% 10%, rgba(255,255,255,0.25), transparent), radial-gradient(50% 40% at 10% 90%, rgba(255,255,255,0.15), transparent)"
+    aria-hidden="true"
+  >
+  </div>
+
+  <Container class="flex flex-col items-start gap-6 py-20 sm:py-28 lg:py-32">
+    {
+      eyebrow && (
+        <span class="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] backdrop-blur-sm">
+          {eyebrow}
+        </span>
+      )
+    }
+    <h1 class="max-w-3xl text-balance font-display text-4xl font-extrabold leading-[1.05] sm:text-5xl lg:text-6xl">
+      {title}
+    </h1>
+    {subtitle && <p class="max-w-2xl text-pretty text-lg text-white/85">{subtitle}</p>}
+    <div class="mt-2 flex flex-wrap gap-3">
+      <slot name="actions" />
+    </div>
+    <slot />
+  </Container>
+</section>

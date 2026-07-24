@@ -1,0 +1,15 @@
+---
+/** Antetítulo en mayúsculas (p. ej. "NUESTRO COMPROMISO ES"). */
+interface Props {
+  class?: string;
+}
+const { class: className = "" } = Astro.props;
+---
+<span
+  class:list={[
+    "inline-block text-xs font-semibold uppercase tracking-[0.16em] text-primary",
+    className,
+  ]}
+>
+  <slot />
+</span>
