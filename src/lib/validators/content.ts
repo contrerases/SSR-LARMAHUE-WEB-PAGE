@@ -111,6 +111,7 @@ export function validateBill(data: unknown): Bill {
   nonEmpty(d.intro, "bill.intro");
   nonEmptyArray(d.parts, "bill.parts");
   d.parts.forEach((p, i) => {
+    nonEmpty(p.id, `bill.parts[${i}].id`);
     nonEmpty(p.title, `bill.parts[${i}].title`);
     nonEmpty(p.description, `bill.parts[${i}].description`);
   });

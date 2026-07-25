@@ -110,5 +110,10 @@ export interface Doc {
 
 export interface Bill {
   intro: string;
-  parts: readonly { title: string; description: string }[];
+  parts: readonly {
+    id: string;
+    title: string;
+    description: string;
+    items?: readonly { term: string; desc: string }[];
+  }[];
 }
