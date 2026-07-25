@@ -1,0 +1,44 @@
+---
+/** Quiénes Somos: texto (placeholder lorem) + foto real + estadísticas. */
+import { Image } from "astro:assets";
+import { Badge } from "@/components/ui";
+import { images } from "@/assets/images";
+import { content } from "@/data";
+
+const { quienesSomos } = content.pages;
+---
+<section id="quienes-somos" class="py-20 sm:py-24">
+  <div class="mx-auto grid max-w-6xl items-center gap-10 px-5 sm:px-8 lg:grid-cols-2 lg:gap-16">
+    <div class="relative">
+      <Image
+        src={images.bannerSecundario}
+        alt="Servicio de agua potable rural de Larmahue"
+        class="aspect-[4/3] w-full rounded-[2rem] object-cover shadow-card"
+        widths={[480, 768, 1024]}
+        sizes="(min-width: 1024px) 40vw, 100vw"
+      />
+      <div class="absolute -bottom-5 -right-3 hidden rounded-[1.5rem] bg-primary px-6 py-4 text-primary-foreground shadow-lg sm:block">
+        <p class="font-display text-2xl font-extrabold">{quienesSomos.stats[0]?.value}</p>
+        <p class="text-xs opacity-90">{quienesSomos.stats[0]?.label}</p>
+      </div>
+    </div>
+
+    <div>
+      <Badge tone="pago" class="mb-3">{quienesSomos.eyebrow}</Badge>
+      <h2 class="font-display text-4xl font-extrabold sm:text-5xl">{quienesSomos.title}</h2>
+      <div class="mt-4 flex flex-col gap-4 text-muted-foreground">
+        {quienesSomos.paragraphs.map((p) => <p>{p}</p>)}
+      </div>
+      <dl class="mt-8 grid grid-cols-3 gap-4">
+        {
+          quienesSomos.stats.map((s) => (
+            <div class="rounded-[1.25rem] border border-border bg-card p-4 text-center backdrop-blur-sm">
+              <dt class="font-display text-2xl font-extrabold text-primary">{s.value}</dt>
+              <dd class="mt-1 text-xs text-muted-foreground">{s.label}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+  </div>
+</section>

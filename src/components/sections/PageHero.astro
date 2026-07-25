@@ -1,0 +1,31 @@
+---
+/** Cabecera de página interior: banda con degradado, breadcrumb, título y onda.
+ *  Da fondo oscuro al header fijo (que arriba es texto blanco). */
+interface Props {
+  eyebrow?: string;
+  title: string;
+  subtitle?: string;
+}
+const { eyebrow, title, subtitle } = Astro.props;
+---
+<section
+  class="relative isolate overflow-hidden pb-24 pt-28 text-white sm:pt-32"
+  style="background-image: var(--hero-gradient)"
+>
+  <div class="mx-auto max-w-6xl px-5 sm:px-8">
+    <nav aria-label="Ruta de navegación" class="mb-4 flex items-center gap-2 text-sm text-white/70">
+      <a href="/" class="transition-colors hover:text-white">Inicio</a>
+      <span aria-hidden="true">/</span>
+      <span class="text-white">{title}</span>
+    </nav>
+    {eyebrow && <p class="text-xs font-semibold uppercase tracking-[0.16em] text-white/80">{eyebrow}</p>}
+    <h1 class="mt-2 text-balance font-display text-4xl font-extrabold sm:text-5xl">{title}</h1>
+    {subtitle && <p class="mt-4 max-w-2xl text-pretty text-lg text-white/85">{subtitle}</p>}
+  </div>
+
+  <div class="absolute inset-x-0 bottom-0 z-10 leading-[0]" aria-hidden="true">
+    <svg viewBox="0 0 1440 120" preserveAspectRatio="none" class="block h-[50px] w-full sm:h-[70px]" style="color: var(--background)">
+      <path fill="currentColor" d="M0 70 C360 20 1080 120 1440 70 L1440 120 L0 120 Z"></path>
+    </svg>
+  </div>
+</section>

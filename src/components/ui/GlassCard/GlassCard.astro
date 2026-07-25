@@ -1,0 +1,19 @@
+---
+/**
+ * Superficie "glass" reutilizable (patrón central del diseño Agua).
+ *  - surface:    sobre el fondo de la página (token --card translúcido).
+ *  - onGradient: sobre el degradado del hero/bandas (blanco translúcido, texto claro).
+ *  - soft:       velo ligero sobre degradado (bloques secundarios).
+ */
+import { cn } from "@/lib";
+import { glassCard, type GlassCardVariants } from "./glassCard.variants";
+
+interface Props extends GlassCardVariants {
+  as?: string;
+  class?: string;
+}
+const { as: Tag = "div", variant, radius, interactive, class: className } = Astro.props;
+---
+<Tag class={cn(glassCard({ variant, radius, interactive }), className)}>
+  <slot />
+</Tag>

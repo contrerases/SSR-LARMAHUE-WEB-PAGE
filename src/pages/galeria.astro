@@ -1,0 +1,40 @@
+---
+import { Image } from "astro:assets";
+import PageLayout from "@/layouts/PageLayout.astro";
+import PageHero from "@/components/sections/PageHero.astro";
+import { images } from "@/assets/images";
+---
+<PageLayout
+  title="Galería"
+  description="Imágenes de las obras, actividades y el entorno del Servicio Sanitario Rural Larmahue."
+>
+  <PageHero
+    eyebrow="Multimedia"
+    title="Galería"
+    subtitle="Imágenes de nuestras obras, actividades y del entorno de Larmahue."
+  />
+
+  <section class="py-16 sm:py-20">
+    <div class="mx-auto max-w-6xl px-5 sm:px-8">
+      <p class="mb-8 text-sm text-muted-foreground">
+        Imágenes de muestra — se reemplazarán por fotografías reales del servicio.
+      </p>
+      <div class="gap-4 [column-fill:_balance] sm:columns-2 lg:columns-3">
+        {
+          images.galeria.map((img, i) => (
+            <figure class="mb-4 overflow-hidden rounded-[1.25rem] shadow-card break-inside-avoid">
+              <Image
+                src={img}
+                alt={`Imagen ${i + 1} de la galería del Servicio Sanitario Rural Larmahue`}
+                widths={[300, 600]}
+                sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 100vw"
+                loading={i < 4 ? "eager" : "lazy"}
+                class="w-full object-cover transition-transform duration-500 hover:scale-105"
+              />
+            </figure>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+</PageLayout>

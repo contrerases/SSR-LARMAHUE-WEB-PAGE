@@ -1,0 +1,26 @@
+---
+/** Banda de "flujo": compromiso institucional + aviso de fugas, sobre degradado. */
+import { GlassCard } from "@/components/ui";
+import { content } from "@/data";
+import { interpolate } from "@/lib";
+
+const { site, copy } = content;
+const leakBody = interpolate(copy.leak.body, { officePhone: site.contact.officePhone });
+---
+<section
+  id="compromiso"
+  class="relative overflow-hidden py-20 text-white sm:py-24"
+  style="background-image: var(--hero-gradient)"
+>
+  <div class="mx-auto grid max-w-6xl items-center gap-6 px-5 sm:px-8 lg:grid-cols-2 lg:gap-10">
+    <GlassCard variant="soft" radius="xl" class="bg-slate-900/35 p-8">
+      <h2 class="text-sm font-semibold uppercase tracking-wide text-white/80">{copy.commitment.eyebrow}</h2>
+      <p class="mt-3 font-display text-2xl font-bold leading-snug text-white sm:text-3xl">{site.mission}</p>
+    </GlassCard>
+
+    <GlassCard variant="onGradient" radius="xl" class="bg-slate-900/40 px-6 py-6">
+      <p class="font-bold text-white">{copy.leak.title}</p>
+      <p class="mt-1 text-sm text-white/85">{leakBody}</p>
+    </GlassCard>
+  </div>
+</section>

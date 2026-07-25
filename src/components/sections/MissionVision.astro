@@ -1,0 +1,33 @@
+---
+/** Misión y Visión. Misión = declaración real del sitio; Visión = placeholder lorem. */
+import { Icon } from "@/components/ui";
+import { content } from "@/data";
+
+const { mision } = content.pages;
+const bloques = [
+  { icon: "drop" as const, ...mision.mision },
+  { icon: "emergency" as const, ...mision.vision },
+];
+---
+<section id="mision-vision" class="bg-muted/40 py-20 sm:py-24">
+  <div class="mx-auto max-w-6xl px-5 sm:px-8">
+    <div class="mx-auto max-w-2xl text-center">
+      <p class="text-xs font-semibold uppercase tracking-[0.16em] text-primary">{mision.eyebrow}</p>
+      <h2 class="mt-3 font-display text-4xl font-extrabold sm:text-5xl">{mision.title}</h2>
+    </div>
+
+    <div class="mt-12 grid gap-6 md:grid-cols-2">
+      {
+        bloques.map((b) => (
+          <article class="rounded-[2rem] border border-border bg-card p-8 shadow-card backdrop-blur-sm">
+            <span class="flex size-14 items-center justify-center rounded-full bg-primary/15 text-primary">
+              <Icon name={b.icon} size="1.6rem" />
+            </span>
+            <h3 class="mt-5 font-display text-2xl font-bold">{b.title}</h3>
+            <p class="mt-3 leading-relaxed text-muted-foreground">{b.body}</p>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</section>

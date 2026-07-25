@@ -1,0 +1,45 @@
+---
+/** Sección de contacto: datos (glass) + formulario que envía correo al comité. */
+import { GlassCard, Badge, ContactItem } from "@/components/ui";
+import ContactForm from "./ContactForm.astro";
+import { content } from "@/data";
+import { telHref, mailtoHref, formatChileanPhone } from "@/lib";
+
+const { site, copy } = content;
+const { contact, location } = site;
+const addressLine = `${location.address}, ${location.commune}`;
+---
+<section id="contacto" class="py-20 sm:py-24">
+  <div class="mx-auto max-w-6xl px-5 sm:px-8">
+    <div class="mx-auto mb-12 max-w-2xl text-center">
+      <Badge tone="ov" class="mb-3">{copy.contact.eyebrow}</Badge>
+      <h2 class="font-display text-4xl font-extrabold sm:text-5xl">{copy.contact.title}</h2>
+      <p class="mt-3 text-muted-foreground">{copy.contact.subtitle}</p>
+    </div>
+
+    <div class="grid gap-6 lg:grid-cols-5">
+      <!-- Datos de contacto -->
+      <GlassCard as="address" radius="xl" class="flex flex-col gap-5 p-8 not-italic lg:col-span-2">
+        <ContactItem icon="pin" label="Dirección" value={addressLine} />
+        <ContactItem icon="mail" label="Correo" value={contact.email} href={mailtoHref(contact.email)} />
+        <ContactItem
+          icon="phone"
+          label="Fono oficina"
+          value={formatChileanPhone(contact.officePhone)}
+          href={telHref(contact.officePhone)}
+        />
+        <ContactItem
+          icon="emergency"
+          label="Emergencias"
+          value={formatChileanPhone(contact.emergencyPhone)}
+          href={telHref(contact.emergencyPhone)}
+        />
+      </GlassCard>
+
+      <!-- Formulario -->
+      <GlassCard radius="xl" class="p-8 lg:col-span-3">
+        <ContactForm />
+      </GlassCard>
+    </div>
+  </div>
+</section>

@@ -16,12 +16,12 @@ const {
   class: className = "",
 } = Astro.props;
 
-const tones = {
+const tones: Record<NonNullable<Props["tone"]>, string> = {
   base: "bg-background text-foreground",
   muted: "bg-muted text-foreground",
   primary: "bg-primary text-primary-foreground",
 };
-const paddings = {
+const paddings: Record<NonNullable<Props["size"]>, string> = {
   sm: "py-10 sm:py-14",
   md: "py-16 sm:py-20",
   lg: "py-20 sm:py-28",

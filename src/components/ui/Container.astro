@@ -6,7 +6,7 @@ interface Props {
   class?: string;
 }
 const { as: Tag = "div", size = "lg", class: className = "" } = Astro.props;
-const widths = {
+const widths: Record<NonNullable<Props["size"]>, string> = {
   sm: "max-w-3xl",
   md: "max-w-5xl",
   lg: "max-w-6xl",

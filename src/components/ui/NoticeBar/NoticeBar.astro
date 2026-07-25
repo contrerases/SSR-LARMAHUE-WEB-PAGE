@@ -1,0 +1,20 @@
+---
+/** Aviso destacado (p. ej. reporte de fugas). Icono por defecto: alerta. */
+import { cn } from "@/lib";
+import { Icon, type IconName } from "../Icon";
+import { noticeBar, type NoticeBarVariants } from "./noticeBar.variants";
+
+interface Props extends NoticeBarVariants {
+  title?: string;
+  icon?: IconName;
+  class?: string;
+}
+const { tone, title, icon = "alert", class: className } = Astro.props;
+---
+<div class={cn(noticeBar({ tone }), className)} role="note">
+  <Icon name={icon} size="1.5rem" class="mt-0.5" />
+  <div class="text-sm sm:text-base">
+    {title && <p class="font-semibold">{title}</p>}
+    <div class={title ? "mt-0.5 opacity-90" : ""}><slot /></div>
+  </div>
+</div>

@@ -1,0 +1,43 @@
+---
+/**
+ * Botón / enlace polimórfico con variantes.
+ * - Si recibe `href` renderiza <a> (autodetecta enlaces externos); si no, <button>.
+ * - Variantes de acción `ov`/`pago` = patrón reconocible del sitio.
+ */
+import { cn } from "@/lib";
+import { button, type ButtonVariants } from "./button.variants";
+
+interface Props extends ButtonVariants {
+  href?: string;
+  external?: boolean;
+  type?: "button" | "submit" | "reset";
+  ariaLabel?: string;
+  class?: string;
+}
+const {
+  href,
+  external,
+  type = "button",
+  ariaLabel,
+  variant,
+  size,
+  fullWidth,
+  class: className,
+} = Astro.props;
+
+const classes = cn(button({ variant, size, fullWidth }), className);
+const isExternal = external ?? href?.startsWith("http") ?? false;
+const rel = href && isExternal ? "noopener noreferrer" : undefined;
+const target = href && isExternal ? "_blank" : undefined;
+---
+{
+  href ? (
+    <a href={href} class={classes} rel={rel} target={target} aria-label={ariaLabel}>
+      <slot />
+    </a>
+  ) : (
+    <button type={type} class={classes} aria-label={ariaLabel}>
+      <slot />
+    </button>
+  )
+}

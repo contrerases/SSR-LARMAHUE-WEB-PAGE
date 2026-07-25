@@ -1,0 +1,24 @@
+---
+/** Shell de páginas interiores: header + contenido + footer + WhatsApp. */
+import BaseLayout from "./BaseLayout.astro";
+import { SiteHeader, SiteFooter } from "@/components/sections";
+import { WhatsappButton } from "@/components/ui";
+import { content } from "@/data";
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+const { title, description } = Astro.props;
+---
+<BaseLayout title={title} description={description}>
+  <SiteHeader />
+  <main id="contenido">
+    <slot />
+  </main>
+  <SiteFooter />
+  <WhatsappButton
+    phone={content.site.contact.emergencyPhone}
+    message={content.copy.whatsapp.defaultMessage}
+  />
+</BaseLayout>

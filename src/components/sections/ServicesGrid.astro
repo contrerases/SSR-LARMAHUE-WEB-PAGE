@@ -1,0 +1,38 @@
+---
+/** Rejilla de accesos con tarjetas glass escalonadas (offset). Datos: content.resources. */
+import { GlassCard, Container, Icon, type IconName } from "@/components/ui";
+import { content } from "@/data";
+
+const { resources, copy } = content;
+---
+<section id="servicios" class="py-20 sm:py-24">
+  <Container>
+    <h2 class="mb-14 max-w-xl font-display text-4xl font-extrabold sm:text-5xl">
+      {copy.services.title}
+    </h2>
+    <ul class="grid list-none gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      {
+        resources.map((r, i) => (
+          <GlassCard
+            as="li"
+            interactive
+            radius="lg"
+            class={`flex flex-col p-6 ${i % 2 === 1 ? "lg:mt-12" : ""}`}
+          >
+            <span class="mb-4 flex size-14 items-center justify-center rounded-full bg-primary/15 text-primary">
+              <Icon name={r.icon as IconName} size="1.6rem" />
+            </span>
+            <h3 class="font-display text-lg font-bold">{r.title}</h3>
+            <p class="mt-1.5 flex-1 text-sm text-muted-foreground">{r.description}</p>
+            <a
+              href={r.href}
+              class="mt-4 inline-flex w-fit items-center gap-1 rounded-full bg-muted px-4 py-2 text-sm font-semibold text-primary transition-colors hover:bg-secondary"
+            >
+              Ver más <Icon name="arrow-right" size="1rem" />
+            </a>
+          </GlassCard>
+        ))
+      }
+    </ul>
+  </Container>
+</section>

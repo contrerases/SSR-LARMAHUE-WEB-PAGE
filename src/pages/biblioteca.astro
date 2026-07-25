@@ -1,0 +1,50 @@
+---
+import PageLayout from "@/layouts/PageLayout.astro";
+import PageHero from "@/components/sections/PageHero.astro";
+import DocumentItem from "@/components/pages/DocumentItem.astro";
+import { content } from "@/data";
+
+// Agrupar documentos por categoría preservando el orden de aparición.
+const groups: Record<string, typeof content.library> = {};
+for (const doc of content.library) (groups[doc.category] ??= []).push(doc);
+const categories = Object.keys(groups);
+---
+<PageLayout
+  title="Biblioteca"
+  description="Reglamentos, estatutos, tarifas y formularios del Servicio Sanitario Rural Larmahue."
+>
+  <PageHero
+    eyebrow="Documentos"
+    title="Biblioteca"
+    subtitle="Reglamentos, estatutos, tarifas y formularios para consultar y descargar."
+  />
+
+  <section class="py-16 sm:py-20">
+    <div class="mx-auto max-w-5xl px-5 sm:px-8">
+      <p class="mb-10 text-sm text-muted-foreground">
+        Documentos de muestra — se reemplazarán por los archivos reales del comité.
+      </p>
+      <div class="flex flex-col gap-12">
+        {
+          categories.map((cat) => (
+            <div>
+              <h2 class="mb-5 font-display text-2xl font-bold text-foreground">{cat}</h2>
+              <div class="grid gap-4">
+                {groups[cat].map((doc) => (
+                  <DocumentItem
+                    title={doc.title}
+                    description={doc.description}
+                    category={doc.category}
+                    format={doc.format}
+                    size={doc.size}
+                    href={doc.href}
+                  />
+                ))}
+              </div>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+</PageLayout>

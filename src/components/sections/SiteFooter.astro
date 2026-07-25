@@ -1,0 +1,40 @@
+---
+/** Pie con onda superior sobre degradado. */
+import LogoDrop from "@/assets/images/logo-drop.svg";
+import LogoWordmark from "@/assets/images/logo-wordmark.svg";
+import { content } from "@/data";
+import { telHref, mailtoHref, formatChileanPhone } from "@/lib";
+
+const { site, copy, resources } = content;
+const { contact, location, credits } = site;
+const addressLine = `${location.address}, ${location.commune}, ${location.region}`;
+---
+<footer class="relative mt-12 text-white" style="background-image: var(--footer-gradient)">
+  <div class="absolute inset-x-0 top-0 -translate-y-full leading-[0]" aria-hidden="true">
+    <svg viewBox="0 0 1440 120" preserveAspectRatio="none" class="block h-[60px] w-full sm:h-[80px]" style="color: var(--footer-top)">
+      <path fill="currentColor" d="M0 60 C360 0 1080 120 1440 60 L1440 120 L0 120 Z"></path>
+    </svg>
+  </div>
+
+  <div class="mx-auto flex max-w-6xl flex-col items-center gap-4 px-5 py-14 text-center sm:px-8">
+    <div class="flex flex-col items-center gap-3 text-white">
+      <LogoDrop class="h-16 w-auto" />
+      <LogoWordmark class="h-8 w-auto" />
+    </div>
+    <p class="max-w-md text-sm text-white/75">{addressLine}</p>
+
+    <nav class="flex flex-wrap items-center justify-center gap-x-5 gap-y-1 text-sm font-medium text-white/85" aria-label="Secciones">
+      {resources.map((r) => <a href={r.href} class="transition-colors hover:text-white">{r.title}</a>)}
+    </nav>
+
+    <div class="flex flex-wrap items-center justify-center gap-x-6 gap-y-1 text-sm text-white/70">
+      <a href={telHref(contact.officePhone)} class="hover:text-white">
+        Oficina: {formatChileanPhone(contact.officePhone)}
+      </a>
+      <a href={mailtoHref(contact.email)} class="hover:text-white">{contact.email}</a>
+    </div>
+    <p class="mt-4 text-xs text-white/60">
+      © {credits.year} {site.fullName}. {copy.footer.rights}
+    </p>
+  </div>
+</footer>

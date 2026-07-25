@@ -1,0 +1,28 @@
+---
+/** Acordeón accesible con <details>/<summary> nativo (sin JS). */
+import { cn } from "@/lib";
+interface Props {
+  question: string;
+  open?: boolean;
+  class?: string;
+}
+const { question, open = false, class: className } = Astro.props;
+---
+<details open={open} class={cn("group border-b border-border", className)}>
+  <summary
+    class="flex cursor-pointer list-none items-center justify-between gap-4 py-4 font-medium text-foreground marker:content-['']"
+  >
+    <span>{question}</span>
+    <span
+      class="grid size-6 shrink-0 place-items-center rounded-full bg-primary/10 text-primary transition-transform group-open:rotate-45"
+      aria-hidden="true"
+    >
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="size-4">
+        <path d="M12 5v14M5 12h14" stroke-linecap="round"></path>
+      </svg>
+    </span>
+  </summary>
+  <div class="pb-4 pr-10 text-pretty text-muted-foreground">
+    <slot />
+  </div>
+</details>

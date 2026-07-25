@@ -1,0 +1,20 @@
+---
+/** Burbujas decorativas flotantes (capa de fondo). La animación se desactiva
+ *  automáticamente con prefers-reduced-motion (ver global.css). */
+interface Props {
+  class?: string;
+}
+const { class: className = "" } = Astro.props;
+---
+<div
+  class:list={["pointer-events-none absolute inset-0 z-0 overflow-hidden", className]}
+  aria-hidden="true"
+>
+  <span class="bubble absolute left-[8%] top-[30%] size-24 rounded-full bg-white/10"></span>
+  <span
+    class="bubble absolute right-[14%] top-[16%] size-40 rounded-full bg-white/10"
+    style="animation-delay: -3s"></span>
+  <span
+    class="bubble absolute bottom-[22%] left-[42%] size-16 rounded-full bg-white/10"
+    style="animation-delay: -6s"></span>
+</div>

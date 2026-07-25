@@ -1,28 +1,25 @@
 ---
-/** Botón flotante de WhatsApp para emergencias/contacto. */
+/** Botón flotante de WhatsApp. Construye el enlace con lib/formatters. */
+import { cn, whatsappHref } from "@/lib";
+import { Icon } from "./Icon";
+
 interface Props {
   phone: string;
   message?: string;
   class?: string;
 }
-const { phone, message = "Hola, necesito ayuda con el servicio de agua.", class: className = "" } =
-  Astro.props;
-const clean = phone.replace(/[^\d]/g, "");
-const href = `https://wa.me/${clean}?text=${encodeURIComponent(message)}`;
+const { phone, message, class: className } = Astro.props;
+const href = whatsappHref(phone, message);
 ---
 <a
   href={href}
   target="_blank"
   rel="noopener noreferrer"
   aria-label="Escríbenos por WhatsApp"
-  class:list={[
+  class={cn(
     "fixed bottom-5 right-5 z-50 flex size-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-lg transition-transform hover:scale-105 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
     className,
-  ]}
+  )}
 >
-  <svg viewBox="0 0 24 24" fill="currentColor" class="size-7" aria-hidden="true">
-    <path
-      d="M17.5 14.4c-.3-.2-1.7-.8-2-.9-.3-.1-.5-.2-.7.1-.2.3-.7.9-.9 1.1-.2.2-.3.2-.6.1a8 8 0 0 1-2.4-1.5 9 9 0 0 1-1.6-2c-.2-.3 0-.5.1-.6l.5-.5.3-.5c.1-.2 0-.4 0-.5l-.9-2.1c-.2-.5-.4-.5-.6-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.3 5.2 4.6.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 1.9-1.4.2-.7.2-1.2.2-1.4-.1-.1-.3-.2-.6-.3ZM12 2a10 10 0 0 0-8.6 15l-1.3 4.8 4.9-1.3A10 10 0 1 0 12 2Z"
-    ></path>
-  </svg>
+  <Icon name="whatsapp" size="1.75rem" />
 </a>

@@ -1,52 +1,41 @@
 ---
 /**
- * Página de inicio (placeholder de la Fase 1).
- * Solo confirma que la base funciona: layout + Tailwind + config del sitio.
- * El contenido y diseño reales llegan en las fases 2–4.
+ * Página de inicio · SSR Larmahue (diseño "El Agua nos Mueve").
+ * Composición de secciones. Todo el texto proviene de @/data y las imágenes
+ * de @/assets/images (optimizadas por astro:assets).
  */
-import BaseLayout from "../layouts/BaseLayout.astro";
-import { site } from "../config/site";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import {
+  SiteHeader,
+  Hero,
+  ServicesGrid,
+  About,
+  MissionVision,
+  Gallery,
+  Commitment,
+  ContactSection,
+  SiteFooter,
+} from "@/components/sections";
+import { WhatsappButton } from "@/components/ui";
+import { content } from "@/data";
 ---
-
-<BaseLayout>
-  <section
-    class="mx-auto flex min-h-dvh max-w-3xl flex-col items-center justify-center gap-6 px-6 text-center"
-  >
-    <span
-      class="rounded-full border border-brand-200 bg-brand-50 px-3 py-1 text-sm font-medium text-brand-700"
-    >
-      Base del proyecto lista ✓
-    </span>
-
-    <h1 class="text-balance text-4xl font-bold tracking-tight sm:text-5xl">
-      {site.fullName}
-    </h1>
-
-    <p class="text-lg text-brand-600">{site.slogan}</p>
-
-    <p class="max-w-prose text-pretty text-slate-600">{site.mission}</p>
-
-    <div class="mt-4 flex flex-wrap items-center justify-center gap-3">
-      <a
-        href={site.services.oficinaVirtual}
-        target="_blank"
-        rel="noopener noreferrer"
-        class="rounded-lg bg-brand-600 px-5 py-2.5 font-medium text-white transition hover:bg-brand-700"
-      >
-        Oficina Virtual
-      </a>
-      <a
-        href={site.services.pagoEnLinea}
-        target="_blank"
-        rel="noopener noreferrer"
-        class="rounded-lg border border-brand-300 px-5 py-2.5 font-medium text-brand-700 transition hover:bg-brand-50"
-      >
-        Pago en Línea
-      </a>
-    </div>
-
-    <p class="mt-8 text-sm text-slate-400">
-      Astro + Tailwind · siguiente paso: estructura y patrones de diseño.
-    </p>
-  </section>
+<BaseLayout
+  title="Agua potable rural en Pichidegua"
+  description="Servicio Sanitario Rural Larmahue (Pichidegua, O'Higgins): paga tu boleta en línea, accede a la Oficina Virtual y reporta emergencias de agua potable."
+>
+  <SiteHeader />
+  <main id="contenido">
+    <Hero />
+    <ServicesGrid />
+    <About />
+    <MissionVision />
+    <Gallery />
+    <Commitment />
+    <ContactSection />
+  </main>
+  <SiteFooter />
+  <WhatsappButton
+    phone={content.site.contact.emergencyPhone}
+    message={content.copy.whatsapp.defaultMessage}
+  />
 </BaseLayout>

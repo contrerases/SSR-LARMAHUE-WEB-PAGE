@@ -1,0 +1,133 @@
+---
+/**
+ * Formulario de contacto (réplica del original). Envía el correo al comité vía
+ * Web3Forms (servicio gratuito, sin backend). Mejora progresiva: si el JS falla,
+ * el POST nativo al endpoint también funciona.
+ */
+import { content } from "@/data";
+
+const { site, copy } = content;
+const f = copy.contact.form;
+const accessKey = site.forms.web3formsAccessKey;
+
+const fieldClass =
+  "w-full rounded-[var(--radius-md)] border border-input bg-background px-4 py-2.5 text-foreground placeholder:text-muted-foreground/70 transition-colors focus-visible:border-primary focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ring";
+const labelClass = "mb-1.5 block text-sm font-medium text-foreground";
+---
+<form
+  id="contact-form"
+  action="https://api.web3forms.com/submit"
+  method="POST"
+  class="flex flex-col gap-4"
+  novalidate
+>
+  <input type="hidden" name="access_key" value={accessKey} />
+  <input type="hidden" name="subject" value="Nuevo mensaje desde el sitio web · SSR Larmahue" />
+  <input type="hidden" name="from_name" value={site.fullName} />
+  <!-- Honeypot anti-spam (oculto para humanos) -->
+  <input type="checkbox" name="botcheck" tabindex="-1" autocomplete="off" class="hidden" aria-hidden="true" />
+
+  <p class="text-xs text-muted-foreground">
+    Los campos con <span class="text-destructive">*</span> son obligatorios.
+  </p>
+
+  <div class="grid gap-4 sm:grid-cols-2">
+    <div>
+      <label class={labelClass} for="cf-name">
+        {f.name} <span class="text-destructive" aria-hidden="true">*</span>
+      </label>
+      <input class={fieldClass} type="text" id="cf-name" name="name" required aria-required="true" autocomplete="name" />
+    </div>
+    <div>
+      <label class={labelClass} for="cf-phone">
+        {f.phone} <span class="font-normal text-muted-foreground">(opcional)</span>
+      </label>
+      <input class={fieldClass} type="tel" id="cf-phone" name="phone" autocomplete="tel" inputmode="tel" />
+    </div>
+  </div>
+
+  <div class="grid gap-4 sm:grid-cols-2">
+    <div>
+      <label class={labelClass} for="cf-email">
+        {f.email} <span class="text-destructive" aria-hidden="true">*</span>
+      </label>
+      <input class={fieldClass} type="email" id="cf-email" name="email" required aria-required="true" autocomplete="email" />
+    </div>
+    <div>
+      <label class={labelClass} for="cf-subject">
+        {f.subject} <span class="font-normal text-muted-foreground">(opcional)</span>
+      </label>
+      <input class={fieldClass} type="text" id="cf-subject" name="subject_user" />
+    </div>
+  </div>
+
+  <div>
+    <label class={labelClass} for="cf-message">
+      {f.message} <span class="text-destructive" aria-hidden="true">*</span>
+    </label>
+    <textarea class={`${fieldClass} min-h-32 resize-y`} id="cf-message" name="message" rows="5" required aria-required="true"></textarea>
+  </div>
+
+  <button
+    type="submit"
+    data-submit
+    class="inline-flex h-12 items-center justify-center rounded-[var(--radius-button)] bg-primary px-7 font-medium text-primary-foreground shadow-sm transition-opacity hover:opacity-90 disabled:pointer-events-none disabled:opacity-60"
+  >
+    <span data-label>{f.submit}</span>
+  </button>
+
+  <p
+    data-status
+    role="status"
+    aria-live="polite"
+    class="hidden rounded-[var(--radius-md)] px-4 py-3 text-sm data-[state=success]:block data-[state=success]:bg-action-pago/12 data-[state=success]:text-action-pago data-[state=error]:block data-[state=error]:bg-destructive/12 data-[state=error]:text-destructive"
+  >
+  </p>
+</form>
+
+<script
+  is:inline
+  define:vars={{ msgs: { sending: f.sending, success: f.success, error: f.error, submit: f.submit } }}
+>
+  const form = document.getElementById("contact-form");
+  const btn = form?.querySelector("[data-submit]");
+  const label = form?.querySelector("[data-label]");
+  const status = form?.querySelector("[data-status]");
+
+  const setStatus = (state, text) => {
+    if (!status) return;
+    status.setAttribute("data-state", state);
+    status.textContent = text;
+  };
+
+  form?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (!form.checkValidity()) {
+      form.reportValidity();
+      return;
+    }
+    btn?.setAttribute("disabled", "true");
+    if (label) label.textContent = msgs.sending;
+    status?.removeAttribute("data-state");
+
+    try {
+      const res = await fetch(form.action, {
+        method: "POST",
+        headers: { Accept: "application/json" },
+        body: new FormData(form),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setStatus("success", msgs.success);
+        form.reset();
+      } else {
+        setStatus("error", data.message || msgs.error);
+      }
+    } catch {
+      setStatus("error", msgs.error);
+    } finally {
+      btn?.removeAttribute("disabled");
+      if (label) label.textContent = msgs.submit;
+    }
+  });
+</script>

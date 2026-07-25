@@ -1,0 +1,193 @@
+---
+/**
+ * Recreación en HTML de la boleta de ejemplo del SSR Larmahue (reemplaza la
+ * imagen original). Cada sección lleva un número y `data-part` para resaltarse
+ * en sincronía con su explicación (ver boleta.astro).
+ */
+import { Icon } from "@/components/ui";
+
+const cliente = [
+  ["Razón Social", "JOSÉ GONZÁLEZ ROJAS"],
+  ["R.U.T.", "11.111.111-1"],
+  ["Dirección", "VILLA LOS NOGALES N°10000"],
+  ["Comuna", "PICHIDEGUA"],
+  ["Fec. Emisión", "31-05-2024"],
+];
+const suministro = [
+  ["Sector", "LA HIGUERITA"],
+  ["Ruta", "20"],
+  ["Direc. Med.", "LA HIGUERITA 1"],
+  ["Diámetro", "13"],
+  ["N° Contrato", "20"],
+  ["Tarifa", "TARIFA DE MEDIA"],
+];
+const consumo = [
+  ["Lectura Actual", "24-05-2024", "811 m³"],
+  ["Lectura Anterior", "25-04-2024", "810 m³"],
+  ["Total Consumo", "", "1 m³"],
+];
+const cuentaItems = [
+  ["Cargo fijo agua potable", "$ 2.500"],
+  ["Consumo agua potable", "$ 500"],
+];
+const cuentaTotales = [
+  ["Total exento", "$ 3.000"],
+  ["Total facturable", "$ 3.000"],
+  ["Total no facturable", "$ 0"],
+  ["Total período", "$ 3.000"],
+];
+const chart = [5, 4, 3, 4, 5, 4, 6, 5, 8, 9, 7, 6, 4];
+const meses = ["May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic", "Ene", "Feb", "Mar", "Abr", "May"];
+
+const box =
+  "relative rounded-lg border border-slate-300 bg-white transition data-[active=true]:z-10 data-[active=true]:border-primary data-[active=true]:ring-2 data-[active=true]:ring-primary/60";
+const badge =
+  "absolute -left-2.5 -top-2.5 z-10 grid size-6 place-items-center rounded-full bg-primary text-[11px] font-bold text-white shadow ring-2 ring-white";
+const cap = "border-b border-slate-200 px-3 py-1.5 text-[11px] font-bold uppercase tracking-wide text-slate-600";
+---
+<div class="mx-auto max-w-3xl rounded-[1.25rem] border border-border bg-white p-4 text-slate-800 shadow-card sm:p-6">
+  <!-- Cabecera -->
+  <div class="flex flex-wrap items-start justify-between gap-4 border-b border-slate-200 pb-4">
+    <div class="flex items-start gap-3">
+      <span class="grid size-11 shrink-0 place-items-center rounded-full bg-primary/10 text-primary">
+        <Icon name="drop" size="1.6rem" />
+      </span>
+      <div class="text-[11px] leading-tight">
+        <p class="font-display text-sm font-bold text-primary">Comité de Agua Potable Rural Larmahue</p>
+        <p class="font-semibold text-slate-600">Captación, Tratamiento y Distribución de Agua</p>
+        <p class="mt-1 text-slate-500">Larmahue s/n, Pichidegua · Fono 9-92261976</p>
+        <p class="text-slate-500">comitelarmahue@gmail.com</p>
+      </div>
+    </div>
+    <div class="rounded-md border-2 border-red-500 px-4 py-2 text-center text-[11px] leading-tight text-slate-800">
+      <p class="font-bold">R.U.T.: 71.272.000-K</p>
+      <p class="my-0.5 font-bold">BOLETA EXENTA ELECTRÓNICA</p>
+      <p class="font-bold">N° 50413</p>
+      <p class="mt-1 text-[10px] text-slate-500">S.I.I. - SAN VICENTE T.T.</p>
+    </div>
+  </div>
+
+  <div class="mt-5 grid gap-4 text-[11px] leading-tight sm:grid-cols-2">
+    <!-- 1 · Datos del Cliente -->
+    <div data-part="1" class={box}>
+      <span class={badge}>1</span>
+      <p class={cap}>Datos del Cliente</p>
+      <dl class="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 p-3">
+        {cliente.map(([k, v]) => (<><dt class="text-slate-500">{k}</dt><dd class="font-semibold">{v}</dd></>))}
+      </dl>
+    </div>
+
+    <!-- 2 · Número de Contrato -->
+    <div data-part="2" class={box}>
+      <span class={badge}>2</span>
+      <p class={cap}>Número de Contrato</p>
+      <div class="flex items-center gap-4 p-3">
+        <span class="font-display text-3xl font-extrabold tabular-nums">20</span>
+        <span class="h-9 flex-1 rounded-sm" style="background: repeating-linear-gradient(90deg,#111 0 2px,transparent 2px 3px,#111 3px 6px,transparent 6px 8px,#111 8px 9px,transparent 9px 13px)"></span>
+      </div>
+    </div>
+
+    <!-- 3 · Detalle del Suministro -->
+    <div data-part="3" class={box}>
+      <span class={badge}>3</span>
+      <p class={cap}>Detalle del Suministro</p>
+      <dl class="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 p-3">
+        {suministro.map(([k, v]) => (<><dt class="text-slate-500">{k}</dt><dd class="font-semibold">{v}</dd></>))}
+      </dl>
+    </div>
+
+    <!-- 4 · Detalle del Consumo -->
+    <div data-part="4" class={box}>
+      <span class={badge}>4</span>
+      <p class={cap}>Detalle del Consumo · Mayo</p>
+      <table class="w-full p-3 text-left">
+        <tbody>
+          {consumo.map(([k, f, v]) => (
+            <tr class="border-b border-slate-100 last:border-0">
+              <td class="py-1 pl-3 text-slate-500">{k}</td>
+              <td class="py-1 tabular-nums text-slate-600">{f}</td>
+              <td class="py-1 pr-3 text-right font-semibold tabular-nums">{v}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 5 · Detalle de su Cuenta -->
+    <div data-part="5" class={`${box} sm:col-span-2`}>
+      <span class={badge}>5</span>
+      <p class={cap}>Detalle de su Cuenta</p>
+      <div class="p-3">
+        <table class="w-full">
+          <tbody>
+            {cuentaItems.map(([k, v]) => (
+              <tr><td class="py-1">{k}</td><td class="py-1 text-right font-semibold tabular-nums">{v}</td></tr>
+            ))}
+          </tbody>
+        </table>
+        <div class="mt-2 border-t border-slate-200 pt-2">
+          <table class="w-full">
+            <tbody>
+              {cuentaTotales.map(([k, v]) => (
+                <tr><td class="py-0.5 text-slate-500">{k}</td><td class="py-0.5 text-right tabular-nums">{v}</td></tr>
+              ))}
+              <tr class="border-t border-slate-300">
+                <td class="pt-1 font-bold">Total a pagar</td>
+                <td class="pt-1 text-right font-bold tabular-nums text-primary">$ 3.000</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6 · Consumo últimos 13 meses -->
+    <div data-part="6" class={`${box} sm:col-span-2`}>
+      <span class={badge}>6</span>
+      <p class={cap}>Consumo últimos 13 meses</p>
+      <div class="flex flex-wrap items-end gap-4 p-3">
+        <div class="flex-1">
+          <div class="flex h-24 items-end gap-1">
+            {chart.map((h) => (
+              <span class="flex-1 rounded-t bg-primary/70" style={`height:${(h / 9) * 100}%`}></span>
+            ))}
+          </div>
+          <div class="mt-1 flex gap-1 text-[8px] text-slate-400">
+            {meses.map((m) => <span class="flex-1 text-center">{m}</span>)}
+          </div>
+        </div>
+        <dl class="grid grid-cols-[auto_1fr] gap-x-2 gap-y-0.5 text-[10px]">
+          <dt class="text-slate-500">Último pago</dt><dd class="font-semibold tabular-nums">$ 10.000</dd>
+          <dt class="text-slate-500">Fecha pago</dt><dd class="tabular-nums">15-05-2024</dd>
+          <dt class="text-slate-500">Próx. lectura</dt><dd class="tabular-nums">25-06-2024</dd>
+        </dl>
+      </div>
+    </div>
+
+    <!-- 7 · Totales -->
+    <div data-part="7" class={box}>
+      <span class={badge}>7</span>
+      <p class={cap}>Totales</p>
+      <div class="flex items-center justify-between p-3">
+        <div>
+          <p class="text-slate-500">TOTAL A PAGAR</p>
+          <p class="font-display text-2xl font-extrabold tabular-nums text-primary">$ 3.000</p>
+          <p class="mt-1 text-slate-500">Vencimiento: <span class="font-semibold tabular-nums text-slate-700">21-06-2024</span></p>
+        </div>
+        <span class="size-14 shrink-0 rounded-sm" style="background-image: conic-gradient(#111 90deg,#fff 90deg 180deg,#111 180deg 270deg,#fff 270deg); background-size: 7px 7px" aria-hidden="true"></span>
+      </div>
+    </div>
+
+    <!-- 8 · Mensaje -->
+    <div data-part="8" class={box}>
+      <span class={badge}>8</span>
+      <p class={cap}>Mensaje</p>
+      <div class="space-y-0.5 p-3 text-slate-600">
+        <p>Fono Emergencias: <span class="font-semibold">9-92261976</span></p>
+        <p>Fono Oficina: <span class="font-semibold">938646480</span></p>
+        <p>Fono WhatsApp: <span class="font-semibold">+56 9 5080 4830</span></p>
+        <p class="mt-1 text-[10px]">Atención Lun–Jue 8:00–13:00 y 14:00–17:30 · Vie 8:00–13:00 y 14:00–16:30</p>
+      </div>
+    </div>
+  </div>
+</div>

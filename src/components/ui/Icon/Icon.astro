@@ -1,0 +1,29 @@
+---
+/** Icono SVG del catálogo. Hereda color (currentColor) y tamaño (1em). */
+import { cn } from "@/lib";
+import { icons, type IconName } from "./icon-paths";
+
+interface Props {
+  name: IconName;
+  size?: number | string;
+  class?: string;
+}
+const { name, size = "1.25em", class: className } = Astro.props;
+const def = icons[name];
+const paths = Array.isArray(def.d) ? def.d : [def.d];
+const filled = def.fill ?? false;
+---
+<svg
+  viewBox="0 0 24 24"
+  width={size}
+  height={size}
+  fill={filled ? "currentColor" : "none"}
+  stroke={filled ? undefined : "currentColor"}
+  stroke-width={filled ? undefined : 1.7}
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  class={cn("inline-block shrink-0", className)}
+  aria-hidden="true"
+>
+  {paths.map((d) => <path d={d} />)}
+</svg>
