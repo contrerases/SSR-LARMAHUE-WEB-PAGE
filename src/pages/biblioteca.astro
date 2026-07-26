@@ -1,13 +1,7 @@
 ---
 import PageLayout from "@/layouts/PageLayout.astro";
 import PageHero from "@/components/sections/PageHero.astro";
-import DocumentItem from "@/components/pages/DocumentItem.astro";
-import { content } from "@/data";
-
-// Agrupar documentos por categoría preservando el orden de aparición.
-const groups: Record<string, typeof content.library> = {};
-for (const doc of content.library) (groups[doc.category] ??= []).push(doc);
-const categories = Object.keys(groups);
+import WaterLoader from "@/components/ui/WaterLoader.astro";
 ---
 <PageLayout
   title="Biblioteca"
@@ -21,30 +15,80 @@ const categories = Object.keys(groups);
 
   <section class="py-16 sm:py-20">
     <div class="mx-auto max-w-5xl px-5 sm:px-8">
-      <p class="mb-10 text-sm text-muted-foreground">
-        Documentos de muestra — se reemplazarán por los archivos reales del comité.
-      </p>
-      <div class="flex flex-col gap-12">
-        {
-          categories.map((cat) => (
-            <div>
-              <h2 class="mb-5 font-display text-2xl font-bold text-foreground">{cat}</h2>
-              <div class="grid gap-4">
-                {groups[cat].map((doc) => (
-                  <DocumentItem
-                    title={doc.title}
-                    description={doc.description}
-                    category={doc.category}
-                    format={doc.format}
-                    size={doc.size}
-                    href={doc.href}
-                  />
-                ))}
-              </div>
-            </div>
-          ))
-        }
+      <div id="biblioteca-estado" class="flex flex-col items-center py-12 text-center text-muted-foreground">
+        <WaterLoader label="Cargando documentos…" />
       </div>
+      <div id="biblioteca-cont" class="flex flex-col gap-12"></div>
     </div>
   </section>
+
+  <!-- Plantilla de ítem de documento -->
+  <template id="tpl-doc">
+    <a data-link target="_blank" rel="noopener noreferrer" class="group flex items-center gap-4 rounded-[1.25rem] border border-border bg-card p-5 shadow-card transition-transform hover:-translate-y-1">
+      <span class="grid size-12 shrink-0 place-items-center rounded-[var(--radius-md)] bg-primary/10 text-primary">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="size-6"><path d="M6 3h9l4 4v14H6z"></path><path d="M14 3v5h5"></path><path d="M8 13h7M8 16h5"></path></svg>
+      </span>
+      <span class="min-w-0 flex-1">
+        <span data-titulo class="block truncate font-display font-semibold text-foreground group-hover:text-primary"></span>
+        <span data-desc class="mt-0.5 block text-sm text-muted-foreground"></span>
+        <span data-meta class="mt-1 block text-xs uppercase tracking-wide text-muted-foreground"></span>
+      </span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" class="size-5 shrink-0 text-primary transition-transform group-hover:translate-x-1"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+    </a>
+  </template>
 </PageLayout>
+
+<script>
+  import { fetchDynamicContent, driveView } from "@/lib/content-api";
+  import type { DocItem } from "@/lib/content-api";
+
+  const estado = document.getElementById("biblioteca-estado");
+  const cont = document.getElementById("biblioteca-cont");
+  const tpl = document.getElementById("tpl-doc") as HTMLTemplateElement | null;
+
+  function docNode(doc: DocItem): DocumentFragment {
+    const node = tpl!.content.cloneNode(true) as DocumentFragment;
+    const link = node.querySelector("[data-link]") as HTMLAnchorElement;
+    link.href = doc.driveid ? driveView(doc.driveid) : "#";
+    (node.querySelector("[data-titulo]") as HTMLElement).textContent = doc.titulo ?? "";
+    (node.querySelector("[data-desc]") as HTMLElement).textContent = doc.descripcion ?? "";
+    const meta = [doc.categoria, doc.formato].filter(Boolean).join(" · ");
+    (node.querySelector("[data-meta]") as HTMLElement).textContent = meta;
+    return node;
+  }
+
+  (async () => {
+    if (!estado || !cont || !tpl) return;
+    try {
+      const { biblioteca } = await fetchDynamicContent();
+      const docs = biblioteca.filter((d) => d.driveid);
+      if (docs.length === 0) {
+        estado.textContent = "Aún no hay documentos publicados.";
+        return;
+      }
+      // Agrupar por categoría preservando el orden de aparición.
+      const groups = new Map<string, DocItem[]>();
+      for (const d of docs) {
+        const cat = d.categoria || "Documentos";
+        if (!groups.has(cat)) groups.set(cat, []);
+        groups.get(cat)!.push(d);
+      }
+      for (const [cat, items] of groups) {
+        const wrap = document.createElement("div");
+        const h = document.createElement("h2");
+        h.className = "mb-5 font-display text-2xl font-bold text-foreground";
+        h.textContent = cat;
+        wrap.appendChild(h);
+        const list = document.createElement("div");
+        list.className = "grid gap-4";
+        items.forEach((d) => list.appendChild(docNode(d)));
+        wrap.appendChild(list);
+        cont.appendChild(wrap);
+      }
+      estado.classList.add("hidden");
+    } catch (err) {
+      estado.textContent = "No se pudieron cargar los documentos. Inténtalo más tarde.";
+      console.error(err);
+    }
+  })();
+</script>

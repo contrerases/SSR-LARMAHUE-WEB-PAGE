@@ -1,8 +1,8 @@
 ---
-import { Image } from "astro:assets";
 import PageLayout from "@/layouts/PageLayout.astro";
 import PageHero from "@/components/sections/PageHero.astro";
-import { images } from "@/assets/images";
+import WaterLoader from "@/components/ui/WaterLoader.astro";
+import MediaLightbox from "@/components/ui/MediaLightbox.astro";
 ---
 <PageLayout
   title="Galería"
@@ -14,27 +14,113 @@ import { images } from "@/assets/images";
     subtitle="Imágenes de nuestras obras, actividades y del entorno de Larmahue."
   />
 
-  <section class="py-16 sm:py-20">
+  <section id="galeria" class="py-16 sm:py-20">
     <div class="mx-auto max-w-6xl px-5 sm:px-8">
-      <p class="mb-8 text-sm text-muted-foreground">
-        Imágenes de muestra — se reemplazarán por fotografías reales del servicio.
-      </p>
-      <div class="gap-4 [column-fill:_balance] sm:columns-2 lg:columns-3">
-        {
-          images.galeria.map((img, i) => (
-            <figure class="mb-4 overflow-hidden rounded-[1.25rem] shadow-card break-inside-avoid">
-              <Image
-                src={img}
-                alt={`Imagen ${i + 1} de la galería del Servicio Sanitario Rural Larmahue`}
-                widths={[300, 600]}
-                sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 100vw"
-                loading={i < 4 ? "eager" : "lazy"}
-                class="w-full object-cover transition-transform duration-500 hover:scale-105"
-              />
-            </figure>
-          ))
-        }
+      <!-- Estado (cargando / vacío / error) -->
+      <div id="galeria-estado" class="flex flex-col items-center py-12 text-center text-muted-foreground">
+        <WaterLoader label="Cargando galería…" />
       </div>
+      <!-- Rejilla de imágenes (se llena en el navegador) -->
+      <div id="galeria-grid" class="hidden grid-cols-2 gap-4 sm:grid-cols-3"></div>
+      <!-- Paginación -->
+      <div id="galeria-pager" class="mt-10 flex flex-wrap items-center justify-center gap-2"></div>
     </div>
   </section>
+
+  <MediaLightbox />
 </PageLayout>
+
+<script>
+  import { fetchDynamicContent, setDriveImage, driveImage } from "@/lib/content-api";
+  import { createPager } from "@/lib/pager";
+
+  const PAGE_SIZE = 9;
+  const estado = document.getElementById("galeria-estado");
+  const grid = document.getElementById("galeria-grid");
+  const pagerEl = document.getElementById("galeria-pager");
+  const section = document.getElementById("galeria");
+
+  const MAGNIFY =
+    '<svg viewBox="0 0 24 24" class="size-9 text-white drop-shadow" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3M11 8v6M8 11h6"/></svg>';
+
+  async function render() {
+    if (!estado || !grid || !pagerEl) return;
+    try {
+      const { galeria } = await fetchDynamicContent();
+      const items = galeria.filter((g) => g.driveid);
+
+      if (items.length === 0) {
+        estado.textContent = "Aún no hay imágenes publicadas.";
+        pagerEl.style.display = "none";
+        return;
+      }
+
+      // Todas las imágenes (alta resolución) para el visor.
+      const lbItems = items.map((it) => ({
+        type: "image" as const,
+        src: driveImage(it.driveid, 1600),
+        alt: it.titulo ?? "Imagen de la galería",
+        caption: it.titulo ?? "",
+      }));
+
+      const card = (it: (typeof items)[number], globalIndex: number) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className =
+          "group relative block aspect-[4/3] w-full overflow-hidden rounded-[1.5rem] bg-secondary shadow-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60";
+        btn.setAttribute("aria-label", `Ampliar imagen: ${it.titulo ?? "sin título"}`);
+
+        const img = document.createElement("img");
+        img.width = 800;
+        img.height = 600;
+        // La 1.ª imagen es candidata LCP: cargar de inmediato; el resto, diferida.
+        img.loading = globalIndex === 0 ? "eager" : "lazy";
+        if (globalIndex === 0) img.fetchPriority = "high";
+        img.decoding = "async";
+        img.alt = it.titulo ?? "Imagen de la galería";
+        img.className =
+          "size-full object-cover transition-transform duration-500 group-hover:scale-105";
+        setDriveImage(img, it.driveid, 800);
+
+        const overlay = document.createElement("span");
+        overlay.className =
+          "pointer-events-none absolute inset-0 grid place-items-center bg-slate-950/0 opacity-0 transition duration-300 group-hover:bg-slate-950/25 group-hover:opacity-100";
+        overlay.innerHTML = MAGNIFY;
+
+        btn.append(img, overlay);
+        btn.addEventListener("click", () => {
+          document.dispatchEvent(
+            new CustomEvent("media-lightbox:open", {
+              detail: { items: lbItems, index: globalIndex },
+            }),
+          );
+        });
+        return btn;
+      };
+
+      createPager({
+        items,
+        pageSize: PAGE_SIZE,
+        controls: pagerEl,
+        scrollTarget: section,
+        renderPage: (pageItems, page) => {
+          const start = (page - 1) * PAGE_SIZE;
+          grid.replaceChildren(
+            ...pageItems.map((it, i) => card(it, start + i)),
+          );
+        },
+      });
+
+      estado.classList.add("hidden");
+      grid.classList.remove("hidden");
+      grid.classList.add("grid");
+    } catch (err) {
+      estado.textContent =
+        "No se pudo cargar la galería. Revisa la configuración e inténtalo más tarde.";
+      pagerEl.style.display = "none";
+      console.error(err);
+    }
+  }
+
+  render();
+</script>

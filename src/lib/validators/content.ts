@@ -5,7 +5,6 @@
  * ya tipado. Si algo falla, lanza y detiene la compilación.
  */
 import {
-  assert,
   nonEmpty,
   minLength,
   email,
@@ -15,7 +14,7 @@ import {
   nonEmptyArray,
 } from "@/lib/validators";
 import { icons } from "@/components/ui/Icon/icon-paths";
-import type { SiteContent, Navigation, Resource, Copy, Pages, Video, Doc, Bill } from "@/types/content";
+import type { SiteContent, Navigation, Resource, Copy, Pages, Bill } from "@/types/content";
 
 const ICON_NAMES = Object.keys(icons);
 
@@ -34,7 +33,6 @@ export function validateSite(data: unknown): SiteContent {
   url(d.services.oficinaVirtual, "site.services.oficinaVirtual");
   url(d.services.pagoEnLinea, "site.services.pagoEnLinea");
   integerMin(d.credits.year, 2000, "site.credits.year");
-  nonEmpty(d.forms.web3formsAccessKey, "site.forms.web3formsAccessKey");
   return d;
 }
 
@@ -80,30 +78,6 @@ export function validatePages(data: unknown): Pages {
   nonEmpty(d.mision.mision.body, "pages.mision.mision.body");
   nonEmpty(d.mision.vision.body, "pages.mision.vision.body");
   return d;
-}
-
-export function validateVideos(data: unknown): Video[] {
-  const arr = data as Video[];
-  nonEmptyArray(arr, "videos");
-  arr.forEach((v, i) => {
-    nonEmpty(v.title, `videos[${i}].title`);
-    nonEmpty(v.description, `videos[${i}].description`);
-    url(v.src, `videos[${i}].src`);
-    url(v.poster, `videos[${i}].poster`);
-  });
-  return arr;
-}
-
-export function validateLibrary(data: unknown): Doc[] {
-  const arr = data as Doc[];
-  nonEmptyArray(arr, "library");
-  arr.forEach((doc, i) => {
-    nonEmpty(doc.title, `library[${i}].title`);
-    nonEmpty(doc.description, `library[${i}].description`);
-    nonEmpty(doc.category, `library[${i}].category`);
-    nonEmpty(doc.href, `library[${i}].href`);
-  });
-  return arr;
 }
 
 export function validateBill(data: unknown): Bill {

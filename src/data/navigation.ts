@@ -15,6 +15,7 @@ export const navigationData = {
       ],
     },
     { label: "Servicios", href: "/#servicios" },
+    { label: "Noticias", href: "/noticias" },
     { label: "Contacto", href: "/#contacto" },
   ],
 } as const;

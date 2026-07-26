@@ -1,8 +1,8 @@
 ---
 import PageLayout from "@/layouts/PageLayout.astro";
 import PageHero from "@/components/sections/PageHero.astro";
-import VideoCard from "@/components/pages/VideoCard.astro";
-import { content } from "@/data";
+import WaterLoader from "@/components/ui/WaterLoader.astro";
+import MediaLightbox from "@/components/ui/MediaLightbox.astro";
 ---
 <PageLayout
   title="Videos"
@@ -14,18 +14,110 @@ import { content } from "@/data";
     subtitle="Material audiovisual del servicio y de la comunidad."
   />
 
-  <section class="py-16 sm:py-20">
+  <section id="videos" class="py-16 sm:py-20">
     <div class="mx-auto max-w-6xl px-5 sm:px-8">
-      <p class="mb-8 text-sm text-muted-foreground">
-        Videos de muestra — se reemplazarán por el material audiovisual real del comité.
-      </p>
-      <div class="grid gap-6 sm:grid-cols-2">
-        {
-          content.videos.map((v) => (
-            <VideoCard title={v.title} description={v.description} src={v.src} poster={v.poster} />
-          ))
-        }
+      <div id="videos-estado" class="flex flex-col items-center py-12 text-center text-muted-foreground">
+        <WaterLoader label="Cargando videos…" />
       </div>
+      <div id="videos-grid" class="hidden gap-6 sm:grid-cols-2"></div>
+      <div id="videos-pager" class="mt-10 flex flex-wrap items-center justify-center gap-2"></div>
     </div>
   </section>
+
+  <!-- Plantilla de tarjeta de video -->
+  <template id="tpl-video">
+    <figure class="flex flex-col overflow-hidden rounded-[1.5rem] border border-border bg-card shadow-card transition hover:shadow-lg">
+      <button type="button" data-play class="group relative block aspect-video w-full overflow-hidden bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60" aria-label="Reproducir video">
+        <img data-thumb width="480" height="360" alt="" loading="lazy" decoding="async" class="size-full object-cover transition-transform duration-500 group-hover:scale-105" />
+        <span class="absolute inset-0 grid place-items-center bg-slate-950/10 transition group-hover:bg-slate-950/25">
+          <span class="grid size-14 place-items-center rounded-full bg-black/55 text-white shadow-lg transition-transform group-hover:scale-110">
+            <svg viewBox="0 0 24 24" fill="currentColor" class="ml-0.5 size-7"><path d="M8 5v14l11-7z"></path></svg>
+          </span>
+        </span>
+      </button>
+      <figcaption class="p-5">
+        <h3 data-titulo class="font-display font-bold text-foreground"></h3>
+        <p data-desc class="mt-1 text-sm text-muted-foreground"></p>
+      </figcaption>
+    </figure>
+  </template>
+
+  <MediaLightbox />
 </PageLayout>
+
+<script>
+  import { fetchDynamicContent, youtubeId, youtubeThumb, youtubeEmbed } from "@/lib/content-api";
+  import { createPager } from "@/lib/pager";
+
+  const PAGE_SIZE = 6;
+  const estado = document.getElementById("videos-estado");
+  const grid = document.getElementById("videos-grid");
+  const pagerEl = document.getElementById("videos-pager");
+  const section = document.getElementById("videos");
+  const tpl = document.getElementById("tpl-video") as HTMLTemplateElement | null;
+
+  (async () => {
+    if (!estado || !grid || !pagerEl || !tpl) return;
+    try {
+      const { videos } = await fetchDynamicContent();
+      // Solo videos con URL de YouTube válida; guardamos el id ya resuelto.
+      const valid = videos
+        .map((v) => ({ ...v, _id: youtubeId(v.youtubeurl || "") }))
+        .filter((v): v is typeof v & { _id: string } => Boolean(v._id));
+
+      if (valid.length === 0) {
+        estado.textContent = "Aún no hay videos publicados.";
+        pagerEl.style.display = "none";
+        return;
+      }
+
+      // Todos los videos para el visor modal.
+      const lbItems = valid.map((v) => ({
+        type: "video" as const,
+        src: youtubeEmbed(v._id),
+        caption: v.titulo ?? "",
+      }));
+
+      const card = (v: (typeof valid)[number], globalIndex: number) => {
+        const node = tpl.content.cloneNode(true) as DocumentFragment;
+        const thumb = node.querySelector("[data-thumb]") as HTMLImageElement;
+        if (globalIndex === 0) {
+          thumb.loading = "eager";
+          thumb.fetchPriority = "high";
+        }
+        thumb.src = youtubeThumb(v._id);
+        thumb.alt = v.titulo ?? "";
+        (node.querySelector("[data-titulo]") as HTMLElement).textContent = v.titulo ?? "";
+        (node.querySelector("[data-desc]") as HTMLElement).textContent = v.descripcion ?? "";
+        const btn = node.querySelector("[data-play]") as HTMLButtonElement;
+        btn.addEventListener("click", () => {
+          document.dispatchEvent(
+            new CustomEvent("media-lightbox:open", {
+              detail: { items: lbItems, index: globalIndex },
+            }),
+          );
+        });
+        return node;
+      };
+
+      createPager({
+        items: valid,
+        pageSize: PAGE_SIZE,
+        controls: pagerEl,
+        scrollTarget: section,
+        renderPage: (pageItems, page) => {
+          const start = (page - 1) * PAGE_SIZE;
+          grid.replaceChildren(...pageItems.map((v, i) => card(v, start + i)));
+        },
+      });
+
+      estado.classList.add("hidden");
+      grid.classList.remove("hidden");
+      grid.classList.add("grid");
+    } catch (err) {
+      estado.textContent = "No se pudieron cargar los videos. Inténtalo más tarde.";
+      pagerEl.style.display = "none";
+      console.error(err);
+    }
+  })();
+</script>

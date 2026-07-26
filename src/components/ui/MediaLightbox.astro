@@ -1,0 +1,193 @@
+---
+/**
+ * Visor multimedia genérico y reutilizable (imágenes y videos de YouTube).
+ * Se incluye una sola vez por página y se controla por eventos:
+ *
+ *   document.dispatchEvent(new CustomEvent("media-lightbox:open", {
+ *     detail: {
+ *       index: 0,
+ *       items: [
+ *         { type: "image", src: "...", alt: "...", caption: "..." },
+ *         { type: "video", src: "<embed url>", caption: "..." },
+ *       ],
+ *     },
+ *   }));
+ *
+ * Soporta teclado (Esc / ← / →), clic en el fondo, prev/next y contador.
+ */
+---
+<div
+  id="media-lightbox"
+  class="fixed inset-0 z-[100] hidden items-center justify-center bg-slate-950/90 p-4 backdrop-blur-sm sm:p-8"
+  role="dialog"
+  aria-modal="true"
+  aria-label="Visor multimedia"
+>
+  <button
+    data-lb-close
+    type="button"
+    aria-label="Cerrar"
+    class="absolute right-4 top-4 grid size-11 place-items-center rounded-full bg-white/10 text-white ring-1 ring-white/20 backdrop-blur transition hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+  >
+    <svg viewBox="0 0 24 24" class="size-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18" /></svg>
+  </button>
+
+  <button
+    data-lb-prev
+    type="button"
+    aria-label="Anterior"
+    class="absolute left-3 top-1/2 grid size-11 -translate-y-1/2 place-items-center rounded-full bg-white/10 text-white ring-1 ring-white/20 backdrop-blur transition hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white sm:left-6"
+  >
+    <svg viewBox="0 0 24 24" class="size-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6" /></svg>
+  </button>
+
+  <button
+    data-lb-next
+    type="button"
+    aria-label="Siguiente"
+    class="absolute right-3 top-1/2 grid size-11 -translate-y-1/2 place-items-center rounded-full bg-white/10 text-white ring-1 ring-white/20 backdrop-blur transition hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white sm:right-6"
+  >
+    <svg viewBox="0 0 24 24" class="size-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6" /></svg>
+  </button>
+
+  <figure class="relative flex max-h-full w-full max-w-5xl flex-col items-center gap-4">
+    <div data-lb-stage class="flex w-full items-center justify-center"></div>
+    <figcaption data-lb-caption class="max-w-2xl text-balance text-center text-sm text-white/85"></figcaption>
+  </figure>
+
+  <div data-lb-counter class="pointer-events-none absolute bottom-5 left-1/2 -translate-x-1/2 rounded-full bg-white/10 px-3 py-1 text-xs font-medium text-white/80 ring-1 ring-white/15"></div>
+</div>
+
+<style>
+  @keyframes lb-in {
+    from {
+      transform: scale(0.96);
+      opacity: 0.3;
+    }
+    to {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+  #media-lightbox [data-lb-stage] > * {
+    animation: lb-in 0.22s ease;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    #media-lightbox [data-lb-stage] > * {
+      animation: none;
+    }
+  }
+</style>
+
+<script>
+  type MediaItem = {
+    type?: "image" | "video";
+    src: string;
+    alt?: string;
+    caption?: string;
+  };
+
+  function initLightbox(root: HTMLElement) {
+    const stage = root.querySelector("[data-lb-stage]") as HTMLElement;
+    const caption = root.querySelector("[data-lb-caption]") as HTMLElement;
+    const counter = root.querySelector("[data-lb-counter]") as HTMLElement;
+    const btnPrev = root.querySelector("[data-lb-prev]") as HTMLButtonElement;
+    const btnNext = root.querySelector("[data-lb-next]") as HTMLButtonElement;
+    const btnClose = root.querySelector("[data-lb-close]") as HTMLButtonElement;
+
+    let items: MediaItem[] = [];
+    let idx = 0;
+    let lastFocused: HTMLElement | null = null;
+
+    const isOpen = () => !root.classList.contains("hidden");
+
+    function render() {
+      const it = items[idx];
+      if (!it) return;
+      stage.innerHTML = "";
+
+      if (it.type === "video") {
+        const wrap = document.createElement("div");
+        wrap.className =
+          "aspect-video w-full max-w-4xl overflow-hidden rounded-2xl bg-black shadow-2xl ring-1 ring-white/10";
+        const iframe = document.createElement("iframe");
+        iframe.src = it.src;
+        iframe.title = it.caption ?? "Video";
+        iframe.className = "h-full w-full";
+        iframe.allow =
+          "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
+        iframe.allowFullscreen = true;
+        iframe.setAttribute("referrerpolicy", "strict-origin-when-cross-origin");
+        wrap.appendChild(iframe);
+        stage.appendChild(wrap);
+      } else {
+        const img = document.createElement("img");
+        img.src = it.src;
+        img.alt = it.alt ?? "";
+        img.decoding = "async";
+        img.className =
+          "max-h-[78vh] w-auto max-w-full rounded-2xl object-contain shadow-2xl ring-1 ring-white/10";
+        stage.appendChild(img);
+      }
+
+      caption.textContent = it.caption ?? it.alt ?? "";
+      const multi = items.length > 1;
+      counter.textContent = multi ? `${idx + 1} / ${items.length}` : "";
+      btnPrev.classList.toggle("hidden", !multi);
+      btnNext.classList.toggle("hidden", !multi);
+    }
+
+    function open(next: MediaItem[], start = 0) {
+      if (!next?.length) return;
+      items = next;
+      idx = Math.max(0, Math.min(start, items.length - 1));
+      lastFocused = document.activeElement as HTMLElement;
+      root.classList.remove("hidden");
+      root.classList.add("flex");
+      document.body.style.overflow = "hidden";
+      render();
+      btnClose.focus();
+    }
+
+    function close() {
+      root.classList.add("hidden");
+      root.classList.remove("flex");
+      stage.innerHTML = ""; // detiene el video al cerrar
+      document.body.style.overflow = "";
+      lastFocused?.focus?.();
+    }
+
+    const prev = () => {
+      idx = (idx - 1 + items.length) % items.length;
+      render();
+    };
+    const next = () => {
+      idx = (idx + 1) % items.length;
+      render();
+    };
+
+    btnClose.addEventListener("click", close);
+    btnPrev.addEventListener("click", prev);
+    btnNext.addEventListener("click", next);
+    root.addEventListener("click", (e) => {
+      if (e.target === root) close();
+    });
+    document.addEventListener("keydown", (e) => {
+      if (!isOpen()) return;
+      if (e.key === "Escape") close();
+      else if (e.key === "ArrowLeft" && items.length > 1) prev();
+      else if (e.key === "ArrowRight" && items.length > 1) next();
+    });
+
+    document.addEventListener("media-lightbox:open", (e) => {
+      const detail = (e as CustomEvent).detail as {
+        items: MediaItem[];
+        index?: number;
+      };
+      open(detail.items, detail.index ?? 0);
+    });
+  }
+
+  const rootEl = document.getElementById("media-lightbox");
+  if (rootEl) initLightbox(rootEl);
+</script>

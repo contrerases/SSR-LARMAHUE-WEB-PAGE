@@ -45,7 +45,9 @@ const chart = [5, 4, 3, 4, 5, 4, 6, 5, 8, 9, 7, 6, 4];
 const meses = ["May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic", "Ene", "Feb", "Mar", "Abr", "May"];
 
 const link =
-  "block rounded border border-slate-300 bg-white transition hover:border-primary hover:shadow-md focus-visible:outline-2 focus-visible:outline-primary data-[active=true]:border-primary data-[active=true]:ring-2 data-[active=true]:ring-primary/60";
+  "relative block cursor-pointer rounded border border-slate-300 bg-white transition duration-200 hover:z-10 hover:scale-[1.03] hover:border-primary hover:shadow-xl focus-visible:outline-2 focus-visible:outline-primary data-[active=true]:z-10 data-[active=true]:border-primary data-[active=true]:ring-2 data-[active=true]:ring-primary/60";
+const badge =
+  "absolute -left-2.5 -top-2.5 z-20 grid size-6 place-items-center rounded-full bg-primary text-[11px] font-bold text-primary-foreground shadow ring-2 ring-white";
 const cap =
   "border-b border-slate-200 bg-slate-50 px-2 py-1 font-sans text-[10px] font-bold uppercase tracking-wide text-slate-700";
 const kv = "grid grid-cols-[6.5rem_1fr] gap-x-1 gap-y-0.5";
@@ -78,12 +80,14 @@ const kv = "grid grid-cols-[6.5rem_1fr] gap-x-1 gap-y-0.5";
   <!-- Fila: Datos del Cliente | Número Contrato -->
   <div class="grid gap-2 font-mono text-[10px] leading-relaxed sm:grid-cols-[1.7fr_1fr] sm:text-[11px]">
     <a href="#datos-cliente" data-part="datos-cliente" class={link} aria-label="Ver explicación: Datos del Cliente">
+      <span class={badge}>1</span>
       <p class={cap}>Datos del Cliente</p>
       <div class={`${kv} p-2`}>
         {cliente.map(([k, v]) => (<><span class="text-slate-500">{k}</span><span class="font-semibold">: {v}</span></>))}
       </div>
     </a>
     <a href="#numero-contrato" data-part="numero-contrato" class={link} aria-label="Ver explicación: Número de Contrato">
+      <span class={badge}>2</span>
       <p class={cap}>Número Contrato</p>
       <div class="flex items-center gap-3 p-2">
         <span class="font-display text-2xl font-extrabold">20</span>
@@ -95,6 +99,7 @@ const kv = "grid grid-cols-[6.5rem_1fr] gap-x-1 gap-y-0.5";
   <!-- Fila: Detalle de su Cuenta | (Suministro + Consumo) -->
   <div class="mt-2 grid gap-2 font-mono text-[10px] leading-relaxed sm:grid-cols-[1.7fr_1fr] sm:text-[11px]">
     <a href="#detalle-cuenta" data-part="detalle-cuenta" class={link} aria-label="Ver explicación: Detalle de su Cuenta">
+      <span class={badge}>5</span>
       <p class={cap}>Detalle de su Cuenta</p>
       <div class="p-2">
         {cuentaItems.map(([k, v]) => (
@@ -113,12 +118,14 @@ const kv = "grid grid-cols-[6.5rem_1fr] gap-x-1 gap-y-0.5";
 
     <div class="flex flex-col gap-2">
       <a href="#detalle-suministro" data-part="detalle-suministro" class={link} aria-label="Ver explicación: Detalle del Suministro">
+        <span class={badge}>3</span>
         <p class={cap}>Detalle del Suministro</p>
         <div class={`${kv} p-2`}>
           {suministro.map(([k, v]) => (<><span class="text-slate-500">{k}</span><span class="font-semibold">: {v}</span></>))}
         </div>
       </a>
       <a href="#detalle-consumo" data-part="detalle-consumo" class={link} aria-label="Ver explicación: Detalle del Consumo">
+        <span class={badge}>4</span>
         <p class={cap}>Detalle del Consumo : Mayo</p>
         <div class={`${kv} p-2`}>
           {consumo.map(([k, v]) => (<><span class="text-slate-500">{k}</span><span class="font-semibold">: {v}</span></>))}
@@ -130,6 +137,7 @@ const kv = "grid grid-cols-[6.5rem_1fr] gap-x-1 gap-y-0.5";
   <!-- Fila: Consumo últimos 13 meses | Totales -->
   <div class="mt-2 grid gap-2 font-mono text-[10px] leading-relaxed sm:grid-cols-[1.7fr_1fr] sm:text-[11px]">
     <a href="#consumo-13" data-part="consumo-13" class={link} aria-label="Ver explicación: Consumo últimos 13 meses">
+      <span class={badge}>6</span>
       <p class={cap}>Consumo últimos 13 meses</p>
       <div class="p-2">
         <div class="flex flex-wrap items-end gap-3">
@@ -159,6 +167,7 @@ const kv = "grid grid-cols-[6.5rem_1fr] gap-x-1 gap-y-0.5";
     </a>
 
     <a href="#totales" data-part="totales" class={link} aria-label="Ver explicación: Totales">
+      <span class={badge}>7</span>
       <p class={cap}>Totales</p>
       <div class="p-2">
         <div class="flex items-baseline justify-between font-bold">
@@ -179,6 +188,7 @@ const kv = "grid grid-cols-[6.5rem_1fr] gap-x-1 gap-y-0.5";
 
   <!-- Mensaje (ancho completo) -->
   <a href="#mensaje" data-part="mensaje" class={`${link} mt-2 font-mono text-[10px] leading-relaxed sm:text-[11px]`} aria-label="Ver explicación: Mensaje">
+    <span class={badge}>8</span>
     <p class={cap}>Mensaje</p>
     <div class="p-2">
       <p>FONO EMERGENCIAS 9-92261976</p>

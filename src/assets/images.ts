@@ -13,15 +13,10 @@ import galeria3 from "./images/gallery/galeria-3.jpg";
 import galeria4 from "./images/gallery/galeria-4.jpg";
 import galeria5 from "./images/gallery/galeria-5.jpg";
 import galeria6 from "./images/gallery/galeria-6.jpg";
-import galeria7 from "./images/gallery/galeria-7.jpg";
-import galeria8 from "./images/gallery/galeria-8.jpg";
-import galeria9 from "./images/gallery/galeria-9.jpg";
 
 export const images = {
   bannerSecundario,
-  // Galería: placeholders (descargados de picsum) — reemplazar por fotos reales.
-  galeria: [
-    galeria1, galeria2, galeria3, galeria4, galeria5,
-    galeria6, galeria7, galeria8, galeria9,
-  ],
+  // Galería de muestra en la home (6 imágenes). La galería completa es dinámica
+  // (Google Drive), por eso aquí solo hay las 6 de la vista previa.
+  galeria: [galeria1, galeria2, galeria3, galeria4, galeria5, galeria6],
 } as const;

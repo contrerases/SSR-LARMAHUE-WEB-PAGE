@@ -1,0 +1,158 @@
+---
+import PageLayout from "@/layouts/PageLayout.astro";
+import PageHero from "@/components/sections/PageHero.astro";
+import WaterLoader from "@/components/ui/WaterLoader.astro";
+---
+<PageLayout
+  title="Noticias"
+  description="Avisos, cortes y novedades del Servicio Sanitario Rural Larmahue."
+>
+  <PageHero
+    eyebrow="Novedades"
+    title="Noticias"
+    subtitle="Avisos, cortes programados y novedades del comité."
+  />
+
+  <section id="noticias" class="py-16 sm:py-20">
+    <div class="mx-auto max-w-6xl px-5 sm:px-8">
+      <div id="noticias-estado" class="flex flex-col items-center py-12 text-center text-muted-foreground">
+        <WaterLoader label="Cargando noticias…" />
+      </div>
+      <!-- Vista lista -->
+      <div id="noticias-grid" class="hidden gap-6 sm:grid-cols-2 lg:grid-cols-3"></div>
+      <div id="noticias-pager" class="mt-10 flex flex-wrap items-center justify-center gap-2"></div>
+      <!-- Vista detalle -->
+      <div id="noticia-detalle" class="hidden"></div>
+    </div>
+  </section>
+
+  <!-- Plantilla: tarjeta de noticia -->
+  <template id="tpl-noticia">
+    <article class="flex flex-col overflow-hidden rounded-[1.5rem] border border-border bg-card shadow-card transition-transform hover:-translate-y-1">
+      <a data-link class="flex flex-1 flex-col">
+        <div data-media class="aspect-[16/9] w-full overflow-hidden bg-muted">
+          <img data-img width="800" height="450" alt="" loading="lazy" decoding="async" class="size-full object-cover" />
+        </div>
+        <div class="flex flex-1 flex-col p-6">
+          <time data-fecha class="text-xs font-semibold uppercase tracking-wide text-primary"></time>
+          <h3 data-titulo class="mt-2 font-display text-lg font-bold text-foreground"></h3>
+          <p data-resumen class="mt-2 flex-1 text-sm text-muted-foreground"></p>
+          <span class="mt-4 text-sm font-semibold text-primary">Leer más →</span>
+        </div>
+      </a>
+    </article>
+  </template>
+
+  <!-- Plantilla: detalle de noticia -->
+  <template id="tpl-detalle">
+    <article class="mx-auto max-w-3xl">
+      <a href="/noticias" class="mb-6 inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline">← Volver a noticias</a>
+      <div data-media class="mb-6 aspect-[16/9] overflow-hidden rounded-[1.5rem] border border-border">
+        <img data-img alt="" decoding="async" class="size-full object-cover" />
+      </div>
+      <time data-fecha class="text-sm font-semibold uppercase tracking-wide text-primary"></time>
+      <h1 data-titulo class="mt-2 font-display text-3xl font-extrabold sm:text-4xl"></h1>
+      <div data-cuerpo class="mt-6 whitespace-pre-line text-pretty leading-relaxed text-foreground/80"></div>
+    </article>
+  </template>
+</PageLayout>
+
+<script>
+  import { fetchDynamicContent, setDriveImage } from "@/lib/content-api";
+  import type { NewsItem } from "@/lib/content-api";
+  import { createPager } from "@/lib/pager";
+
+  const PAGE_SIZE = 9;
+  const estado = document.getElementById("noticias-estado");
+  const grid = document.getElementById("noticias-grid");
+  const pagerEl = document.getElementById("noticias-pager");
+  const detalle = document.getElementById("noticia-detalle");
+  const section = document.getElementById("noticias");
+  const tplCard = document.getElementById("tpl-noticia") as HTMLTemplateElement;
+  const tplDet = document.getElementById("tpl-detalle") as HTMLTemplateElement;
+
+  const MESES = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
+  function fmtFecha(s?: string): string {
+    if (!s) return "";
+    const m = String(s).slice(0, 10).match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    return m ? `${+m[3]} ${MESES[+m[2] - 1]} ${m[1]}` : String(s);
+  }
+
+  function card(n: NewsItem, index = 0): DocumentFragment {
+    const node = tplCard.content.cloneNode(true) as DocumentFragment;
+    (node.querySelector("[data-link]") as HTMLAnchorElement).href =
+      `/noticias?articulo=${encodeURIComponent(n.slug)}`;
+    const media = node.querySelector("[data-media]") as HTMLElement;
+    const img = node.querySelector("[data-img]") as HTMLImageElement;
+    // La 1.ª tarjeta es candidata LCP: cargar de inmediato; el resto, diferida.
+    if (index === 0) {
+      img.loading = "eager";
+      img.fetchPriority = "high";
+    }
+    if (n.imagendriveid) setDriveImage(img, n.imagendriveid, 800);
+    else media.remove();
+    img.alt = n.titulo ?? "";
+    (node.querySelector("[data-fecha]") as HTMLElement).textContent = fmtFecha(n.fecha);
+    (node.querySelector("[data-titulo]") as HTMLElement).textContent = n.titulo ?? "";
+    (node.querySelector("[data-resumen]") as HTMLElement).textContent = n.resumen ?? "";
+    return node;
+  }
+
+  function renderList(items: NewsItem[]) {
+    if (!grid || !pagerEl) return;
+    const sorted = [...items].sort((a, b) =>
+      String(b.fecha ?? "").localeCompare(String(a.fecha ?? "")),
+    );
+    createPager({
+      items: sorted,
+      pageSize: PAGE_SIZE,
+      controls: pagerEl,
+      scrollTarget: section,
+      renderPage: (pageItems) =>
+        grid.replaceChildren(...pageItems.map((n, i) => card(n, i))),
+    });
+    grid.classList.remove("hidden");
+    grid.classList.add("grid");
+  }
+
+  function renderDetalle(n: NewsItem) {
+    if (!detalle) return;
+    const node = tplDet.content.cloneNode(true) as DocumentFragment;
+    const media = node.querySelector("[data-media]") as HTMLElement;
+    const img = node.querySelector("[data-img]") as HTMLImageElement;
+    if (n.imagendriveid) setDriveImage(img, n.imagendriveid, 1200);
+    else media.remove();
+    img.alt = n.titulo ?? "";
+    (node.querySelector("[data-fecha]") as HTMLElement).textContent = fmtFecha(n.fecha);
+    (node.querySelector("[data-titulo]") as HTMLElement).textContent = n.titulo ?? "";
+    (node.querySelector("[data-cuerpo]") as HTMLElement).textContent = n.cuerpo ?? n.resumen ?? "";
+    detalle.appendChild(node);
+    detalle.classList.remove("hidden");
+    document.title = `${n.titulo} · Noticias · SSR Larmahue`;
+  }
+
+  (async () => {
+    if (!estado) return;
+    try {
+      const { noticias } = await fetchDynamicContent();
+      if (noticias.length === 0) {
+        estado.textContent = "Aún no hay noticias publicadas.";
+        if (pagerEl) pagerEl.style.display = "none";
+        return;
+      }
+      const slug = new URLSearchParams(location.search).get("articulo");
+      const articulo = slug ? noticias.find((n) => n.slug === slug) : null;
+      estado.classList.add("hidden");
+      if (articulo) {
+        if (pagerEl) pagerEl.style.display = "none";
+        renderDetalle(articulo);
+      } else {
+        renderList(noticias);
+      }
+    } catch (err) {
+      estado.textContent = "No se pudieron cargar las noticias. Inténtalo más tarde.";
+      if (pagerEl) pagerEl.style.display = "none";
+      console.error(err);
+    }
+  })();
+</script>

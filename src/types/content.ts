@@ -39,7 +39,6 @@ export interface SiteContent {
   contact: Contact;
   services: { oficinaVirtual: string; pagoEnLinea: string };
   credits: { developer: string; year: number };
-  forms: { web3formsAccessKey: string };
 }
 
 export interface Resource {
@@ -88,24 +87,6 @@ export interface Pages {
     mision: { title: string; body: string };
     vision: { title: string; body: string };
   };
-}
-
-export interface Video {
-  id: string;
-  title: string;
-  description: string;
-  src: string;
-  poster: string;
-}
-
-export interface Doc {
-  id: string;
-  title: string;
-  description: string;
-  category: string;
-  format: string;
-  size: string;
-  href: string;
 }
 
 export interface Bill {

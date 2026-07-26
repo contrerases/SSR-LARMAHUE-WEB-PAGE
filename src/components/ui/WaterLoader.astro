@@ -1,0 +1,110 @@
+---
+/**
+ * Indicador de carga con temática de agua: una "ola" en movimiento que llena un
+ * círculo, con una burbuja que sube. Solo CSS (sin JS) y respeta reduce-motion.
+ */
+interface Props {
+  label?: string;
+  size?: number; // px
+  class?: string;
+}
+const { label, size = 62, class: className = "" } = Astro.props;
+---
+<div class:list={["wloader", className]} style={`--wl:${size}px`} role="status" aria-live="polite">
+  <div class="wloader__circle">
+    <span class="wloader__wave"></span>
+    <span class="wloader__wave wloader__wave--b"></span>
+    <span class="wloader__bubble"></span>
+    <span class="wloader__bubble wloader__bubble--b"></span>
+  </div>
+  {label && <p class="wloader__label">{label}</p>}
+  <span class="sr-only">Cargando…</span>
+</div>
+
+<style>
+  .wloader {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.9rem;
+  }
+  .wloader__circle {
+    position: relative;
+    width: var(--wl);
+    height: var(--wl);
+    border-radius: 9999px;
+    overflow: hidden;
+    background: var(--secondary);
+    box-shadow:
+      inset 0 0 0 2px color-mix(in oklab, var(--primary) 22%, transparent),
+      0 10px 26px -12px color-mix(in oklab, var(--primary) 60%, transparent);
+  }
+  /* Olas: cuadrados redondeados que giran; su borde ondula la superficie. */
+  .wloader__wave {
+    position: absolute;
+    left: 50%;
+    top: 28%;
+    width: 200%;
+    height: 200%;
+    background: var(--primary);
+    border-radius: 43% 45% 42% 44%;
+    transform: translateX(-50%);
+    animation: wl-spin 4.5s linear infinite;
+  }
+  .wloader__wave--b {
+    top: 33%;
+    background: var(--accent);
+    opacity: 0.5;
+    border-radius: 46% 43% 45% 42%;
+    animation-duration: 7s;
+    animation-direction: reverse;
+  }
+  .wloader__bubble {
+    position: absolute;
+    bottom: 8%;
+    left: 42%;
+    width: 11%;
+    height: 11%;
+    border-radius: 9999px;
+    background: color-mix(in oklab, white 75%, transparent);
+    animation: wl-bubble 2.6s ease-in infinite;
+  }
+  .wloader__bubble--b {
+    left: 60%;
+    width: 8%;
+    height: 8%;
+    animation-duration: 3.4s;
+    animation-delay: -1.3s;
+  }
+  .wloader__label {
+    font-size: 0.9rem;
+    color: var(--muted-foreground);
+  }
+  @keyframes wl-spin {
+    from {
+      transform: translateX(-50%) rotate(0deg);
+    }
+    to {
+      transform: translateX(-50%) rotate(360deg);
+    }
+  }
+  @keyframes wl-bubble {
+    0% {
+      transform: translateY(0) scale(0.7);
+      opacity: 0;
+    }
+    25% {
+      opacity: 0.9;
+    }
+    100% {
+      transform: translateY(-260%) scale(1);
+      opacity: 0;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .wloader__wave,
+    .wloader__bubble {
+      animation: none;
+    }
+  }
+</style>

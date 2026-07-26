@@ -1,5 +1,5 @@
 // @ts-check
-import { defineConfig } from "astro/config";
+import { defineConfig, envField } from "astro/config";
 import tailwindcss from "@tailwindcss/vite";
 import sitemap from "@astrojs/sitemap";
 
@@ -10,6 +10,25 @@ export default defineConfig({
 
   // Genera sitemap-index.xml + sitemap-0.xml en el build.
   integrations: [sitemap()],
+
+  // Variables de entorno tipadas y validadas (astro:env).
+  // PUBLIC_ = accesible en el navegador (el contenido se lee en runtime).
+  env: {
+    schema: {
+      // URL del Web App de Google Apps Script (contenido dinámico Sheets + Drive).
+      PUBLIC_CONTENT_API: envField.string({
+        context: "client",
+        access: "public",
+        optional: true,
+      }),
+      // Clave de acceso de Web3Forms para el formulario de contacto (pública).
+      PUBLIC_WEB3FORMS_KEY: envField.string({
+        context: "client",
+        access: "public",
+        optional: true,
+      }),
+    },
+  },
 
   // Salida 100% estática: genera HTML/CSS/JS en `dist/`, sin runtime de Node.
   // Ideal para subir a un Apache (mismo servidor actual) o a Cloudflare/Netlify.

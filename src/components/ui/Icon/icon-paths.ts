@@ -17,6 +17,7 @@ export type IconName =
   | "mail"
   | "alert"
   | "arrow-right"
+  | "news"
   | "menu";
 
 export const icons: Record<IconName, IconDef> = {
@@ -45,5 +46,8 @@ export const icons: Record<IconName, IconDef> = {
     d: "M12 9v4m0 4h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z",
   },
   "arrow-right": { d: "M5 12h14M13 6l6 6-6 6" },
+  news: {
+    d: ["M4 5h13a1 1 0 0 1 1 1v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a1 1 0 0 1 1-1Z", "M18 8h2a1 1 0 0 1 1 1v9a2 2 0 0 1-3 0", "M7 9h7M7 12h7M7 15h4"],
+  },
   menu: { d: "M4 7h16M4 12h16M4 17h16" },
 };

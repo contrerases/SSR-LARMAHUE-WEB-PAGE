@@ -40,16 +40,4 @@ export const siteData = {
     developer: "Asesora SpA",
     year: 2026,
   },
-
-  /**
-   * Formulario de contacto. Envía el correo a `comitelarmahue@gmail.com` mediante
-   * Web3Forms (servicio gratuito, sin backend). Igual que la web actual.
-   *
-   * ⚠️ PENDIENTE: el comité debe crear su clave gratuita en https://web3forms.com
-   * (con el correo comitelarmahue@gmail.com) y pegarla aquí. Hasta entonces el
-   * envío no llegará a destino.
-   */
-  forms: {
-    web3formsAccessKey: "PENDIENTE-ACCESS-KEY-WEB3FORMS",
-  },
 } as const;
